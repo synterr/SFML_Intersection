@@ -25,14 +25,14 @@ void PointLightSource::UpdateLight(Vector2f pos)
 void PointLightSource::UpdateLight()
 {
 
-	float raySpread = TWO_PI / 6; //Spread angle of light cone
+	float raySpread = this->spreadAngle; //Spread angle of light cone
 
 	traces.clear();			//Clean all traces before light parameters will be updated
 
 	if (this->rayCount > 0) //Minimum two rays
 	{
-		float step = 1.f / this->rayCount;
-		for (float a = 0; a < raySpread; a += step)
+		float step = raySpread / this->rayCount;
+		for (float a = 0; a <= raySpread; a += step)
 		{
 			const float x = cos(a - raySpread / 2 + this->angle);
 			const float y = sin(a - raySpread / 2 + this->angle);
