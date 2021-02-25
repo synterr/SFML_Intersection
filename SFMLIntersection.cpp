@@ -11,12 +11,14 @@ const Color    ray_color_hit = Color(255, 255, 255, 20);
 const Color    wall_color = Color(0, 255, 0, 200);;
 const Vector2f window_size(900, 600);
 
+//Create light sources
 PointLightSource light1 = PointLightSource(100.f, ray_density, g_mouse_pos, 0.f,ray_color, 60.f);
 
 int main()
 {
 	
 	FPS fps;
+
 	Font font;
 	if (!font.loadFromFile("segoeui.ttf"))
 	{
@@ -34,9 +36,7 @@ int main()
 	std::vector<Vector2f> points;
 	std::vector<Segment> segments;
 
-	float deltaTime = 0.0f;
-	
-	Clock clock;
+
 
 	// create an empty shape
 	ConvexShape convex;
@@ -84,8 +84,6 @@ int main()
 	while (window.isOpen())
 	{
 
-		deltaTime = clock.restart().asSeconds();
-
 		Event event;
 		while (window.pollEvent(event))
 		{
@@ -130,16 +128,10 @@ int main()
 		//window.draw(convex);
 
 		// Set start of ray-drawing line to mouse position
-		ray_line[0].position = g_mouse_pos;
-
-		ray_line[0].color = ray_color;
-		ray_line[1].color = ray_color;
 
 		for (int i = 0; i < light1.traces.size(); i++)
 		{
 
-			// Set ray end-point to default
-			//light1.traces[i].rays[0][0].reset(g_mouse_pos);
 
 			// Cycle through every wall and set end point to intersection
 			// When an intersection is found, the end-point is set to that intersection, meaning the next check will check for walls
@@ -152,15 +144,22 @@ int main()
 			}
 
 			// Set drawing-line end to final intersection
+			ray_line[0].position = light1.traces[i].rays[0][0].m_pos;
 			ray_line[1].position = light1.traces[i].rays[0][0].m_end;
 
 			// Draw ray
-			/*if (light1.rays[i].isHit)
+			if (light1.traces[i].rays[0][0].isHit)
 			{
 				ray_line[0].color = ray_color_hit;
 				ray_line[1].color = ray_color_hit;
-			}*/
-				window.draw(ray_line);
+			}
+			else
+			{
+				ray_line[0].color = ray_color;
+				ray_line[1].color = ray_color;
+			}
+
+			window.draw(ray_line);
 		}
 
 		// Draw walls
