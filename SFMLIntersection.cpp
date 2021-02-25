@@ -6,7 +6,7 @@ Vector2f g_mouse_pos = Vector2f(0, 0);    //Last Left Mouse Position
 Vector2f l_mouse_pos = Vector2f(10, 10);  //Last Right Mouse Position
 
 int  trace_density = 500;
-int	  maxdepth = 20;
+int	  maxdepth = 10;
 
 const Color    ray_color = Color(255, 255, 255, 10);
 const Color    ray_color_secondary = Color(255, 100, 50, 50);
@@ -41,10 +41,10 @@ int main()
 
 
 	// create an empty shape
-	ConvexShape convex;
+	//ConvexShape convex;
 
 	// resize it to 5 points
-	convex.setPointCount(5);
+	//convex.setPointCount(5);
 
 	unsigned int maxPoints = 12;
 	// define the points
@@ -250,6 +250,16 @@ int main()
 			wall_line[0].position = segments[i].p0;
 			wall_line[1].position = segments[i].p1;
 			window.draw(wall_line);
+			CircleShape circle;
+			circle.setRadius(1);
+			circle.setFillColor(Color::Transparent);
+			circle.setOutlineThickness(1);
+			circle.setOutlineColor(Color::Red);
+			circle.setPosition(segments[i].p0);
+			window.draw(circle);
+			circle.setPosition(segments[i].p1);
+			window.draw(circle);
+
 		}
 
 
@@ -270,7 +280,7 @@ int main()
 		text.setPosition(10, 30);
 		text.setString(fpss.str());
 		window.draw(text);
-		
+
 		fpss.str(std::string());
 		fpss << "Rays:" << total_rays;
 		text.setPosition(10, 50);

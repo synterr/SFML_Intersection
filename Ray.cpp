@@ -25,20 +25,20 @@ bool Ray::calc_hit(Vector2f p3, Vector2f p4)
 	const Vector2f p2 = m_end;
 
 	// Calculates denominator of equations
-	const float den = (p1.x - p2.x) * (p3.y - p4.y) - (p1.y - p2.y) * (p3.x - p4.x);
+	const double den = ((double)p1.x - p2.x) * ((double)p3.y - p4.y) - ((double)p1.y - p2.y) * ((double)p3.x - p4.x);
 
 	if (den == 0)
 		return false;
 
-	const float t = ((p1.x - p3.x) * (p3.y - p4.y) - (p1.y - p3.y) * (p3.x - p4.x)) / den;
-	const float u = -((p1.x - p2.x) * (p1.y - p3.y) - (p1.y - p2.y) * (p1.x - p3.x)) / den;
+	const double t = (((double)p1.x - p3.x) * ((double)p3.y - p4.y) - ((double)p1.y - p3.y) * ((double)p3.x - p4.x)) / den;
+	const double u = -(((double)p1.x - p2.x) * ((double)p1.y - p3.y) - ((double)p1.y - p2.y) * ((double)p1.x - p3.x)) / den;
 
 	// If there's an intersection...
 	if (t > 0 && t < 1 && u > 0 && u < 1)
 	{
 		// Gets intersection point
-		m_end.x = p1.x + t * (p2.x - p1.x);
-		m_end.y = p1.y + t * (p2.y - p1.y);
+		m_end.x = (float)(p1.x + t * ((double)p2.x - p1.x));
+		m_end.y = (float)(p1.y + t * ((double)p2.y - p1.y));
 		m_isHit = true;
 		return true;
 	}
