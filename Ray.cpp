@@ -12,13 +12,6 @@ Ray::Ray(Vector2f pos, Vector2f dir)
 	isHit = false;
 }
 
-// Reset end-point of Ray
-void Ray::reset(Vector2f pos)
-{
-	//m_pos = pos;
-	// Set end-point to (default length) distance away from mouse in set direction
-	//m_end = m_pos + m_relative_end;
-}
 
 // Calculates intersection-point two lines
 // Used for getting intersection between Ray and wall

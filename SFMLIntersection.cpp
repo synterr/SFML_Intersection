@@ -7,7 +7,7 @@ Vector2f l_mouse_pos = Vector2f(10, 10);  //Last Right Mouse Position
 
 long    ray_density = 1000;
 const Color    ray_color = Color(255, 255, 255, 10);
-const Color    ray_color_hit = Color(255, 255, 255, 20);
+const Color    ray_color_hit = Color(255, 255, 255, 100);
 const Color    wall_color = Color(0, 255, 0, 200);;
 const Vector2f window_size(900, 600);
 
@@ -37,14 +37,13 @@ int main()
 	std::vector<Segment> segments;
 
 
-
 	// create an empty shape
 	ConvexShape convex;
 
 	// resize it to 5 points
 	convex.setPointCount(5);
 
-	unsigned int maxPoints = 10;
+	unsigned int maxPoints = 20;
 	// define the points
 	for(int cnt = 0; cnt < maxPoints/2; cnt++)
 	{
@@ -110,7 +109,7 @@ int main()
 		if (Mouse::isButtonPressed(Mouse::Button::Left))
 		{
 			g_mouse_pos = Vector2f(Mouse::getPosition(window));
-			//light1.angle = atan2(l_mouse_pos.y - g_mouse_pos.y, l_mouse_pos.x - g_mouse_pos.x);
+			light1.angle = atan2(l_mouse_pos.y - g_mouse_pos.y, l_mouse_pos.x - g_mouse_pos.x);
 			light1.UpdateLight(g_mouse_pos);
 		}
 		
@@ -131,35 +130,36 @@ int main()
 
 		for (int i = 0; i < light1.traces.size(); i++)
 		{
+			for (int r = 0; r < light1.traces[i].rays.size(); r++)
+			{
+				for (int j = 0; j < segments.size(); j++)
+				{
+					// Calculate ray end-point
+					// When an intersection is found, the end-point is set to that intersection, meaning the next check will check for walls
+					// between mouse and the new end-point. This means the ray will always go to the nearest wall
+					light1.traces[i].rays[r][0].calc_hit(segments[j].p0, segments[j].p1);
+				}
 
+				// Set drawing-line end to final intersection
+				ray_line[0].position = light1.traces[i].rays[r][0].m_pos;
+				ray_line[1].position = light1.traces[i].rays[r][0].m_end;
 
-			// Cycle through every wall and set end point to intersection
-			// When an intersection is found, the end-point is set to that intersection, meaning the next check will check for walls
-			// between mouse and the new end-point. This means the ray will always go to the nearest wall
+				// Draw ray
+				if (light1.traces[i].rays[r][0].isHit)
+				{
+					ray_line[0].color = ray_color_hit;
+					ray_line[1].color = ray_color_hit;
+				}
+				else
+				{
+					ray_line[0].color = ray_color;
+					ray_line[1].color = ray_color;
+				}
+
+				window.draw(ray_line);
+			}
+
 			
-			for (int j = 0; j < segments.size(); j++)
-			{
-				// Calculate ray end-point
-				light1.traces[i].rays[0][0].calc_hit(segments[j].p0, segments[j].p1);
-			}
-
-			// Set drawing-line end to final intersection
-			ray_line[0].position = light1.traces[i].rays[0][0].m_pos;
-			ray_line[1].position = light1.traces[i].rays[0][0].m_end;
-
-			// Draw ray
-			if (light1.traces[i].rays[0][0].isHit)
-			{
-				ray_line[0].color = ray_color_hit;
-				ray_line[1].color = ray_color_hit;
-			}
-			else
-			{
-				ray_line[0].color = ray_color;
-				ray_line[1].color = ray_color;
-			}
-
-			window.draw(ray_line);
 		}
 
 		// Draw walls
