@@ -5,23 +5,23 @@
 Vector2f g_mouse_pos = Vector2f(0, 0);    //Last Left Mouse Position
 Vector2f l_mouse_pos = Vector2f(10, 10);  //Last Right Mouse Position
 
-long  ray_density = 1000;
-int	  maxdepth = 2;
+int  trace_density = 500;
+int	  maxdepth = 20;
 
 const Color    ray_color = Color(255, 255, 255, 10);
 const Color    ray_color_secondary = Color(255, 100, 50, 50);
-const Color    ray_color_hit = Color(255, 255, 255, 100);
+const Color    ray_color_hit = Color(255, 255, 255, 10);
 const Color    wall_color = Color(0, 255, 0, 200);;
 const Vector2f window_size(900, 600);
 
 //Create light sources
-PointLightSource light1 = PointLightSource(100.f, ray_density, g_mouse_pos, 0.f,ray_color, TWO_PI/64);
+PointLightSource light1 = PointLightSource(100.f, trace_density, g_mouse_pos, 0.f,ray_color, TWO_PI/64);
 
 int main()
 {
 	
 	FPS fps;
-
+	long total_rays = 0;
 	Font font;
 	if (!font.loadFromFile("segoeui.ttf"))
 	{
@@ -46,20 +46,20 @@ int main()
 	// resize it to 5 points
 	convex.setPointCount(5);
 
-	unsigned int maxPoints = 180;
+	unsigned int maxPoints = 12;
 	// define the points
-	//for(int cnt = 0; cnt < maxPoints/2; cnt++)
-	//{
-	//	points.push_back(Vector2f(random(window_size.x, 50), random(window_size.y, 50)));
-	//	points.push_back(Vector2f(random(window_size.x, 50), random(window_size.y, 50)));
-	//}
+	/*for(int cnt = 0; cnt < maxPoints/2; cnt++)
+	{
+		points.push_back(Vector2f(random(window_size.x, 50), random(window_size.y, 50)));
+		points.push_back(Vector2f(random(window_size.x, 50), random(window_size.y, 50)));
+	}*/
 
-	float step = TWO_PI/2 / maxPoints;
+	float step = TWO_PI / maxPoints;
 		
 	float lx = 200 * cos(0);
 	float ly = 200 * sin(0);
 
-	for (float a = step; a < TWO_PI/2 +step/2; a += step)
+	for (float a = step; a < TWO_PI +step/2; a += step)
 	{
 		float x = 200* cos(a);
 		float y = 200 * sin(a);
@@ -69,7 +69,7 @@ int main()
 		lx = x;
 		ly = y;
 	}
-	//points.push_back(Vector2f(window_size.x / 2 + lx, window_size.y / 2 + ly));
+	
 	
 	/*lx = 50 * cos(0);
 	ly = 50 * sin(0);
@@ -162,6 +162,8 @@ int main()
 
 		// Set start of ray-drawing line to mouse position
 		light1.UpdateLight(g_mouse_pos);
+		total_rays = 0;
+
 		for (int i = 0; i < light1.traces.size(); i++)
 		{
 			int depth = 0;
@@ -235,7 +237,7 @@ int main()
 							ray_line[0].color = ray_color;
 							ray_line[1].color = ray_color;
 						}
-
+						total_rays++;
 						window.draw(ray_line);
 					}
 				}
@@ -257,10 +259,22 @@ int main()
 		fpss << "FPS:" << fps.getFPS();
 		// set the string to display
 
+		text.setPosition(10, 10);
 		text.setString(fpss.str());
 		text.setCharacterSize(16); // in pixels, not points!
 		text.setFillColor(sf::Color(200,200,200,100));
+		window.draw(text);
 
+		fpss.str(std::string());
+		fpss << "Traces:" << trace_density;
+		text.setPosition(10, 30);
+		text.setString(fpss.str());
+		window.draw(text);
+		
+		fpss.str(std::string());
+		fpss << "Rays:" << total_rays;
+		text.setPosition(10, 50);
+		text.setString(fpss.str());
 		window.draw(text);
 		fps.update();
 

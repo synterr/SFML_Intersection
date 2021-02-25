@@ -6,8 +6,8 @@ Ray::Ray(Vector2f pos, Vector2f dir)
 	// Add arbitrary length
 	m_color = Color::Magenta;
 	m_dir = VectorNormalize(dir);
-	m_relative_end = dir * 3000.f;
-	m_pos = pos + m_dir*0.1f;
+	m_relative_end = m_dir * 3000.f;
+	m_pos = pos + m_dir*1.f;
 	// Set end-point to (default length) distance away from mouse in set direction
 	m_end = m_pos + m_relative_end;
 
