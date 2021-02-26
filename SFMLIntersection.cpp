@@ -1,6 +1,6 @@
 #include "globals.h"
 #include <iostream>
-#include "Segment.h"
+#include "Polygon.h"
 
 Vector2f g_mouse_pos = Vector2f(0, 0);    //Last Left Mouse Position
 Vector2f l_mouse_pos = Vector2f(10, 10);  //Last Right Mouse Position
@@ -36,24 +36,10 @@ int main()
 	
 	srand(time(NULL));
 	
-	std::vector<Vector2f> points;
-	std::vector<Segment> segments;
+	Polygon circle;
 
-
-	// create an empty shape
-	//ConvexShape convex;
-
-	// resize it to 5 points
-	//convex.setPointCount(5);
-
+	
 	unsigned int maxPoints = 180;
-	// define the points
-	/*for(int cnt = 0; cnt < maxPoints/2; cnt++)
-	{
-		points.push_back(Vector2f(random(window_size.x, 50), random(window_size.y, 50)));
-		points.push_back(Vector2f(random(window_size.x, 50), random(window_size.y, 50)));
-	}*/
-
 	float step = TWO_PI / maxPoints;
 		
 	float lx = 200 * cos(0);
@@ -63,34 +49,20 @@ int main()
 	{
 		float x = 200* cos(a);
 		float y = 200 * sin(a);
-		points.push_back(Vector2f(window_size.x/2+x, window_size.y/2+y));
-		points.push_back(Vector2f(window_size.x / 2 + lx, window_size.y / 2 + ly));
+		circle.m_points.push_back(Vector2f(window_size.x/2+x, window_size.y/2+y));
+		circle.m_points.push_back(Vector2f(window_size.x / 2 + lx, window_size.y / 2 + ly));
 		
 		lx = x;
 		ly = y;
 	}
-	
-	
-	/*lx = 50 * cos(0);
-	ly = 50 * sin(0);
 
-	for (float a = step; a <= TWO_PI; a += step)
-	{
-		float x = 50 * cos(a);
-		float y = 50 * sin(a);
-		points.push_back(Vector2f(window_size.x / 4 + x, window_size.y / 4 + y));
-		points.push_back(Vector2f(window_size.x / 4 + lx, window_size.y / 4 + ly));
-
-		lx = x;
-		ly = y;
-	}*/
 
 	int i = 0;
 	Vector2f lastPoint;
-	for (auto it : points)
+	for (auto it : circle.m_points)
 	{
 		if (i % 2 != 0) //if i > 0 for continous convex
-			segments.push_back(Segment(lastPoint, it));
+			circle.m_segments.push_back(Segment(lastPoint, it));
 		//convex.setPoint(i, it);
 		lastPoint = it;
 		i++;
@@ -98,8 +70,8 @@ int main()
 	// Do this if want to have segment that is closing shape (last point to first point)
 	//segments.push_back(Segment(lastPoint, points.at(0)));
 
-	for (auto it : segments)
-		printf("Segment: %f, %f - %f, %f\n", it.p0.x, it.p0.y, it.p1.x, it.p1.y);
+	for (auto it : circle.m_segments)
+		printf("Segment: %f, %f - %f, %f\n", it.m_p0.x, it.m_p0.y, it.m_p1.x, it.m_p1.y);
 
 	light1.UpdateLight();
 
@@ -186,15 +158,13 @@ int main()
 						// Curently not working must be testseg array with elements per depth.
 						//if (!light1.traces[i].rays[d][r].calc_hit(testseg.p0, testseg.p1))
 						//{
-							for (int j = 0; j < segments.size(); j++)
+							for (int j = 0; j < circle.m_segments.size(); j++)
 							{
 								// Calculate ray end-point
 								// When an intersection is found, the end-point is set to that intersection, meaning the next check will check for walls
 								// between start and the new end-point. This means the ray will always go to the nearest wall
-								//light1.traces[i].rays[d][r].calc_hit(segments[j].p0, segments[j].p1);
-
 								
-								if (light1.traces[i].rays[d][r].calc_hit(segments[j]))
+								if (light1.traces[i].rays[d][r].calc_hit(circle.m_segments[j]))
 								{
 									// Curently not working must be testseg array with elements per depth.
 									//testseg = segments[j];
@@ -243,20 +213,20 @@ int main()
 		}
 
 		// Draw walls
-		for (int i = 0; i < segments.size(); i++)
+		for (int i = 0; i < circle.m_segments.size(); i++)
 		{
-			wall_line[0].position = segments[i].p0;
-			wall_line[1].position = segments[i].p1;
+			wall_line[0].position = circle.m_segments[i].m_p0;
+			wall_line[1].position = circle.m_segments[i].m_p1;
 			window.draw(wall_line);
-			CircleShape circle;
-			circle.setRadius(1);
-			circle.setFillColor(Color::Transparent);
-			circle.setOutlineThickness(1);
-			circle.setOutlineColor(Color::Red);
-			circle.setPosition(segments[i].p0);
-			window.draw(circle);
-			circle.setPosition(segments[i].p1);
-			window.draw(circle);
+			CircleShape cir;
+			cir.setRadius(1);
+			cir.setFillColor(Color::Transparent);
+			cir.setOutlineThickness(1);
+			cir.setOutlineColor(Color::Red);
+			cir.setPosition(circle.m_segments[i].m_p0);
+			window.draw(cir);
+			cir.setPosition(circle.m_segments[i].m_p1);
+			window.draw(cir);
 
 		}
 

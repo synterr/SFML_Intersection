@@ -28,16 +28,16 @@ bool Ray::calc_hit(Segment &seg)
 	const float dpx = p1.x - p2.x;
 	const float dpy = p1.y - p2.y;
 
-	const float dsx = seg.p0.x - seg.p1.x;
-	const float dsy = seg.p0.y - seg.p1.y;
+	const float dsx = seg.m_p0.x - seg.m_p1.x;
+	const float dsy = seg.m_p0.y - seg.m_p1.y;
 
 	const float den = (dpx) * (dsy) - (dpy) * (dsx);
 
 	if (den == 0)
 		return false;
 		
-	const float t = ((p1.x - seg.p0.x) * (dsy) - (p1.y - seg.p0.y) * (dsx)) / den;
-	const float u = -((dpx) * (p1.y - seg.p0.y) - (dpy) * (p1.x - seg.p0.x)) / den;
+	const float t = ((p1.x - seg.m_p0.x) * (dsy) - (p1.y - seg.m_p0.y) * (dsx)) / den;
+	const float u = -((dpx) * (p1.y - seg.m_p0.y) - (dpy) * (p1.x - seg.m_p0.x)) / den;
 
 	// Make normal smoothing below!!!!!!!!!!!!!!!!!!!!!
 	// If there's an intersection...
@@ -48,7 +48,7 @@ bool Ray::calc_hit(Segment &seg)
 		m_end.y = p1.y + t * -dpy;
 		m_isHit = true;
 		
-		m_n1 = seg.n1;
+		m_n1 = seg.m_n0 * t + seg.m_n1 * (1-t);
 		return true;
 	}
 	return false;

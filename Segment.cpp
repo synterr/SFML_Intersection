@@ -2,15 +2,14 @@
 
 Segment::Segment(sf::Vector2f p0, sf::Vector2f p1)
 {
-	this->p0 = p0;
-	this->p1 = p1;
-	float dx = p1.x - p0.x;
-	float dy = p1.y - p0.y;
-	n1 = Vector2f(-dy, dx);
-	//n2 = Vector2f(dy, -dx);
-	float normalize = 1/sqrtf(VectorDotProduct(n1, n1));
-	n1 = n1 * normalize;
-	//n2 = n2 * normalize;
+	this->m_p0 = p0;
+	this->m_p1 = p1;
+	float dx = m_p1.x - m_p0.x;
+	float dy = m_p1.y - m_p0.y;
+	m_n0 = Vector2f(-dy, dx);
+	m_n1 = Vector2f(-dy, dx); //Vector2f(dy, -dx);
+	m_n0 = VectorNormalize(m_n0);
+	m_n1 = VectorNormalize(m_n1);
 }
 
 Segment::~Segment()

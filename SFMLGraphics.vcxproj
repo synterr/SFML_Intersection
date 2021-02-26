@@ -154,6 +154,7 @@
   <ItemGroup>
     <ClCompile Include="LightSource.cpp" />
     <ClCompile Include="PointLightSource.cpp" />
+    <ClCompile Include="Polygon.cpp" />
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="Segment.cpp" />
     <ClCompile Include="SFMLIntersection.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="Globals.h" />
     <ClInclude Include="LightSource.h" />
     <ClInclude Include="PointLightSource.h" />
+    <ClInclude Include="Polygon.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="Segment.h" />
     <ClInclude Include="Trace.h" />
