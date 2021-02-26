@@ -14,5 +14,12 @@ public:
 public:
 	vector<Vector2f> m_points;
 	vector<Segment>  m_segments;
+
+	void generateSegments();
+	void smoothNormals();
+
+private:
+	Segment& findSegmentByPoint(Segment& s, bool& found, int p0_or_1, int f0_or_1);
+	inline float VectorCmp(Vector2f& v0, Vector2f& v1);
 };
 

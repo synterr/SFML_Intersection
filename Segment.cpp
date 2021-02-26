@@ -12,6 +12,14 @@ Segment::Segment(sf::Vector2f p0, sf::Vector2f p1)
 	m_n1 = VectorNormalize(m_n1);
 }
 
+Segment::Segment()
+{
+	this->m_p0 = Vector2f(0, 0);
+	this->m_p1 = Vector2f(0, 0);
+	this->m_n0 = Vector2f(0, 0);
+	this->m_n1 = Vector2f(0, 0);
+}
+
 Segment::~Segment()
 {
 }

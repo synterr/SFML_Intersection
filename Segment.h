@@ -6,6 +6,7 @@ class Segment
 {
 public:
 	Segment(sf::Vector2f p0, sf::Vector2f p1);
+	Segment();
 	~Segment();
 
 	Vector2f m_p0;

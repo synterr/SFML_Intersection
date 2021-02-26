@@ -48,7 +48,19 @@ bool Ray::calc_hit(Segment &seg)
 		m_end.y = p1.y + t * -dpy;
 		m_isHit = true;
 		
-		m_n1 = seg.m_n0 * t + seg.m_n1 * (1-t);
+		float l;
+
+		if (abs(dsy) >= abs(dsx))
+			l = ((m_end.y - seg.m_p0.y) / -dsy );	//linear blend of normals
+		else
+			l = ((m_end.x - seg.m_p0.x) / -dsx );	//linear blend of normals
+		
+		m_n1 = seg.m_n0* (1 - l) + seg.m_n1 * (l);
+#ifdef NDEBUG
+		//printf("n0: %f, %f n1: %f, %f \n", seg.m_n0.x, seg.m_n0.y, seg.m_n1.x, seg.m_n1.y);
+		//printf("l: %f, end: %f, absdsx: %f, segx: %f \n", l, m_end.x, dsx, seg.m_p0.x);
+		//printf("main0: %f, %f \n\n", m_n1.x, m_n1.y);
+#endif
 		return true;
 	}
 	return false;
