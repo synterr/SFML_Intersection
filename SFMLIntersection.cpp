@@ -46,7 +46,7 @@ int main()
 	// resize it to 5 points
 	//convex.setPointCount(5);
 
-	unsigned int maxPoints = 12;
+	unsigned int maxPoints = 180;
 	// define the points
 	/*for(int cnt = 0; cnt < maxPoints/2; cnt++)
 	{
@@ -186,7 +186,6 @@ int main()
 						// Curently not working must be testseg array with elements per depth.
 						//if (!light1.traces[i].rays[d][r].calc_hit(testseg.p0, testseg.p1))
 						//{
-							Segment hitseg(Vector2f(0.f, 0.f), Vector2f(0.f, 0.f));
 							for (int j = 0; j < segments.size(); j++)
 							{
 								// Calculate ray end-point
@@ -195,11 +194,10 @@ int main()
 								//light1.traces[i].rays[d][r].calc_hit(segments[j].p0, segments[j].p1);
 
 								
-								if (light1.traces[i].rays[d][r].calc_hit(segments[j].p0, segments[j].p1))
+								if (light1.traces[i].rays[d][r].calc_hit(segments[j]))
 								{
 									// Curently not working must be testseg array with elements per depth.
 									//testseg = segments[j];
-									hitseg = segments[j];
 								}
 							}
 						//}
@@ -214,7 +212,7 @@ int main()
 							
 							depth = light1.traces[i].rays.size()-1;
 							//Vector2f newdir(light1.traces[i].rays[d][r].m_dir.x+light1.traces[i].rays[d][r].m_dir.x*sin(TWO_PI/16), light1.traces[i].rays[d][r].m_dir.y+light1.traces[i].rays[d][r].m_dir.y *cos(TWO_PI / 16));
-							Ray ray1(light1.traces[i].rays[d][r].m_end, light1.traces[i].rays[d][r].m_dir - 2.0f * VectorDotProduct(light1.traces[i].rays[d][r].m_dir, hitseg.n1) * hitseg.n1);
+							Ray ray1(light1.traces[i].rays[d][r].m_end, light1.traces[i].rays[d][r].m_dir - 2.0f * VectorDotProduct(light1.traces[i].rays[d][r].m_dir, light1.traces[i].rays[d][r].m_n1) * light1.traces[i].rays[d][r].m_n1);
 							//Vector2f newdir1(light1.traces[i].rays[d][r].m_dir.x + light1.traces[i].rays[d][r].m_dir.x * -sin(TWO_PI / 16), light1.traces[i].rays[d][r].m_dir.y + light1.traces[i].rays[d][r].m_dir.y * -cos(TWO_PI /16));
 							//Ray ray2(light1.traces[i].rays[d][r].m_end, newdir1);
 							ray1.m_isHit = false;
@@ -262,7 +260,7 @@ int main()
 
 		}
 
-
+#ifdef NDEBUG
 		sf::Text text;
 		text.setFont(font); // font is a sf::Font
 		stringstream fpss;
@@ -287,6 +285,9 @@ int main()
 		text.setString(fpss.str());
 		window.draw(text);
 		fps.update();
+#else
+
+#endif
 
 		window.display();
 

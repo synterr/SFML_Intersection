@@ -18,28 +18,37 @@ Ray::Ray(Vector2f pos, Vector2f dir)
 // Calculates intersection-point two lines
 // Used for getting intersection between Ray and wall
 // More or less black-box code
-bool Ray::calc_hit(Vector2f p3, Vector2f p4)
+bool Ray::calc_hit(Segment &seg)
 {
 	Vector2f p1 = m_pos;
 	//p1 = p1 + m_dir * .1f; //Slight offset to avoid multiple collisions from the same segment
 	const Vector2f p2 = m_end;
 
 	// Calculates denominator of equations
-	const double den = ((double)p1.x - p2.x) * ((double)p3.y - p4.y) - ((double)p1.y - p2.y) * ((double)p3.x - p4.x);
+	const float dpx = p1.x - p2.x;
+	const float dpy = p1.y - p2.y;
+
+	const float dsx = seg.p0.x - seg.p1.x;
+	const float dsy = seg.p0.y - seg.p1.y;
+
+	const float den = (dpx) * (dsy) - (dpy) * (dsx);
 
 	if (den == 0)
 		return false;
+		
+	const float t = ((p1.x - seg.p0.x) * (dsy) - (p1.y - seg.p0.y) * (dsx)) / den;
+	const float u = -((dpx) * (p1.y - seg.p0.y) - (dpy) * (p1.x - seg.p0.x)) / den;
 
-	const double t = (((double)p1.x - p3.x) * ((double)p3.y - p4.y) - ((double)p1.y - p3.y) * ((double)p3.x - p4.x)) / den;
-	const double u = -(((double)p1.x - p2.x) * ((double)p1.y - p3.y) - ((double)p1.y - p2.y) * ((double)p1.x - p3.x)) / den;
-
+	// Make normal smoothing below!!!!!!!!!!!!!!!!!!!!!
 	// If there's an intersection...
 	if (t > 0 && t < 1 && u > 0 && u < 1)
 	{
 		// Gets intersection point
-		m_end.x = (float)(p1.x + t * ((double)p2.x - p1.x));
-		m_end.y = (float)(p1.y + t * ((double)p2.y - p1.y));
+		m_end.x = p1.x + t * -dpx;
+		m_end.y = p1.y + t * -dpy;
 		m_isHit = true;
+		
+		m_n1 = seg.n1;
 		return true;
 	}
 	return false;
