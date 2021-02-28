@@ -6,18 +6,18 @@
 Vector2f g_mouse_pos = Vector2f(0, 0);    //Last Left Mouse Position
 Vector2f l_mouse_pos = Vector2f(10, 10);  //Last Right Mouse Position
 
-unsigned int	trace_density = 250;
+unsigned int	trace_density = 1000;
 unsigned int	maxdepth = 50;
 
-const Color		ray_color = Color(255, 255, 255, 30);
+const Color		ray_color = Color(255, 255, 255, 255/(trace_density/20));
 const Color		ray_color_secondary = Color(255, 100, 50, 50);
-const Color		ray_color_hit = Color(255, 255, 255, 30);
+const Color		ray_color_hit = Color(255, 255, 255, 255/ (trace_density / 20));
 const Color		wall_color = Color(0, 255, 0, 200);;
 const Vector2f	window_size(900.f, 600.f);
 
 //Create light sources
-//PointLightSource light1 = PointLightSource(100.f, trace_density, g_mouse_pos, 0.f,ray_color, DegToRad(10.f));
-LinearLightSource light1 = LinearLightSource(100.f, trace_density, g_mouse_pos, 0.f, ray_color, 5.f);
+PointLightSource light1 = PointLightSource(100.f, trace_density, g_mouse_pos, 0.f,ray_color, DegToRad(10.f));
+//LinearLightSource light1 = LinearLightSource(100.f, trace_density, g_mouse_pos, 0.f, ray_color, 5.f);
 
 int main()
 {
@@ -61,7 +61,7 @@ int main()
 	//	ly = y;
 	//}
 	
-	unsigned int maxPoints = 720;
+	unsigned int maxPoints = 360;
 	float radius = 250.f;
 	float rot = -TWO_PI / 8;
 	Vector2f center = Vector2f(window_size.x / 2, window_size.y / 2);
@@ -83,7 +83,7 @@ int main()
 	}
 
 	
-	maxPoints = 720/2;
+	maxPoints = 360/2;
 	radius = 200;
 	rot = -TWO_PI / 9;
 	center = Vector2f(window_size.x / 2 , window_size.y / 2);
@@ -178,13 +178,15 @@ int main()
 		light1.UpdateLight(g_mouse_pos);
 		total_rays = 0;
 
+		vector<Segment*> testsegs;
+
 		for (int i = 0; i < light1.traces.size(); i++)
 		{
 			unsigned int depth = 0;
 			bool newDepth = false;
 			do
 			{
-				for (unsigned int d = depth; d < depth+1; d++)			//Rays Depth loop - should be do-loop with 
+				for (unsigned int d = depth; d < depth+1; d++)			//Rays Depth loop
 				{
 					if (d > maxdepth)
 					{
@@ -192,7 +194,17 @@ int main()
 						break;
 					}
 					// Curently not working must be testseg array with elements per depth.
-					//Segment testseg(Vector2f(0.f,0.f), Vector2f(0.f, 0.f));
+					Segment testseg(Vector2f(0.f, 0.f), Vector2f(0.f, 0.f));
+					if (testsegs.size() - 1 >= depth && testsegs.size() > 0)
+					{
+						testseg = *testsegs[d];
+					}
+					else
+					{
+						
+						testsegs.push_back(&testseg);
+					}
+
 					newDepth = false;
 					for (int r = 0; r < light1.traces[i].rays[d].size(); r++)	//Rays for specific depth
 					{
@@ -200,23 +212,21 @@ int main()
 
 						rayHit.m_isHit = false;
 						// Curently not working must be testseg array with elements per depth.
-						//if (!light1.traces[i].rays[d][r].calc_hit(testseg.p0, testseg.p1))
-						//{
+						if (!light1.traces[i].rays[d][r].calc_hit(testseg))
+						{
 							for (int j = 0; j < circle.m_segments.size(); j++)
 							{
 								// Calculate ray end-point
 								// When an intersection is found, the end-point is set to that intersection, meaning the next check will check for walls
 								// between start and the new end-point. This means the ray will always go to the nearest wall
 								
-								rayHit.calc_hit(circle.m_segments[j]);
-
-								//if (rayHit.calc_hit(circle.m_segments[j]))
-								//{
+								if (rayHit.calc_hit(circle.m_segments[j]))
+								{
 									// Curently not working must be testseg array with elements per depth.
-									//testseg = segments[j];
-								//}
+									testsegs[d] = &circle.m_segments[j];
+								}
 							}
-						//}
+						}
 						if (rayHit.m_isHit)
 						{
 							if (!newDepth)
