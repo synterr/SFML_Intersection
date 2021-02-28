@@ -11,7 +11,7 @@ public:
 	Vector2f m_pos;
 	Vector2f m_dir;
 	Vector2f m_normal; 
-	Color m_color;
+	float intensity;
 	bool m_isHit;
 
 	Ray();

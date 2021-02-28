@@ -33,12 +33,12 @@ inline float Clamp(float x, float a, float b) { return x < a ? a : (x > b ? b : 
 //	return (dir * eta - normal * (-N_dot_I + eta * N_dot_I));
 //}
 
-Vector2f Refract(Vector2f dir, Vector2f normal, float eta)
+Vector2f Refract(Vector2f& dir, Vector2f& normal, float ior)
 {
     normal = -normal;
     
     float cosi = Clamp(VectorDotProduct(dir, normal),-1.f,1.f);
-    float etai = 1, etat = eta;
+    float etai = 1, etat = ior;
     Vector2f n = normal;
     if (cosi < 0) 
     { 
@@ -55,6 +55,29 @@ Vector2f Refract(Vector2f dir, Vector2f normal, float eta)
         return Vector2f(0.f, 0.f);
     else
         return etac * dir + (etac * cosi - sqrtf(k)) * n;
+}
+
+
+void Fresnel(Vector2f &dir, Vector2f &normal, float ior, float& kr)
+{
+    float cosi = Clamp(VectorDotProduct(dir, normal), -1.f, 1.f);
+    float etai = 1, etat = ior;
+    if (cosi > 0) { std::swap(etai, etat); }
+    // Compute sini using Snell's law
+    float sint = etai / etat * sqrtf(std::max(0.f, 1 - cosi * cosi));
+    // Total internal reflection
+    if (sint >= 1) {
+        kr = 1;
+    }
+    else {
+        float cost = sqrtf(std::max(0.f, 1 - sint * sint));
+        cosi = fabsf(cosi);
+        float Rs = ((etat * cosi) - (etai * cost)) / ((etat * cosi) + (etai * cost));
+        float Rp = ((etai * cosi) - (etat * cost)) / ((etai * cosi) + (etat * cost));
+        kr = (Rs * Rs + Rp * Rp) / 2;
+    }
+    // As a consequence of the conservation of energy, transmittance is given by:
+    // kt = 1 - kr;
 }
 
 inline float RadToDeg(float Rad) {	return Rad / TWO_PI * 90.f;}

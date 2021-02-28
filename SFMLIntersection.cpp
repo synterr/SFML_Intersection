@@ -8,8 +8,8 @@ Vector2f l_mouse_pos = Vector2f(10, 10);  //Last Right Mouse Position
 
 bool redrawShape = true;
 
-unsigned int	trace_density = 500;
-unsigned int	maxdepth = 8;
+unsigned int	trace_density = 500;//500
+unsigned int	maxdepth = 16;//8
 
 
 const Vector2f	window_size(900.f, 600.f);
@@ -26,21 +26,22 @@ int main()
 		printf("Fonts not found \n");
 	}
 
-	unsigned int alphaint = 20;
+	unsigned int div = 40;
+	unsigned int alphaint = div;
 
-	if (trace_density > 30)
+	if (trace_density > div)
 		alphaint = trace_density;
 	else
-		alphaint = 30;
+		alphaint = div;
 
-	const Color		ray_color = Color(255, 255, 255, 255 / (alphaint / 20));
-	const Color		ray_color_hit = Color(255, 255, 255, 255 / (alphaint / 20));
+	const Color		ray_color = Color(255 , 255 , 255, 255 / (alphaint / div));
+	const Color		ray_color_hit = Color(255 , 255, 255, 255 / (alphaint / div));
 	const Color		ray_color_secondary = Color(255, 100, 50, 50);
 	const Color		wall_color = Color(0, 255, 0, 200);
 
 	//Create light sources
-	PointLightSource light1 = PointLightSource(100.f, trace_density, g_mouse_pos, 0.f, ray_color, DegToRad(30.f));
-	//LinearLightSource light1 = LinearLightSource(100.f, trace_density, g_mouse_pos, 0.f, ray_color, 120.f);
+	PointLightSource light1 = PointLightSource(1.f, trace_density, g_mouse_pos, 0.f, ray_color, DegToRad(30.f));
+	//LinearLightSource light1 = LinearLightSource(1.f, trace_density, g_mouse_pos, 0.f, ray_color, 60.f);
 
 	ContextSettings settings;
 	settings.antialiasingLevel = 8;
@@ -72,10 +73,10 @@ int main()
 	//	ly = y;
 	//}
 
-	unsigned int maxPoints = 720;
+	unsigned int maxPoints = 360;
 	float radius = 250.f;
 	float rot = -TWO_PI / 8;
-	Vector2f center = Vector2f(window_size.x / 2, window_size.y / 2);
+	Vector2f center = Vector2f(window_size.x / 2 + 300, window_size.y / 2);
 	float lx = radius * cos(0 + rot);
 	float ly = radius * sin(0 + rot);
 
@@ -118,7 +119,7 @@ int main()
 	maxPoints = 360 / 2;
 	radius = 100;
 	rot = -TWO_PI / 9;
-	center = Vector2f(window_size.x / 2 +200, window_size.y / 2);
+	center = Vector2f(window_size.x / 2 +150, window_size.y / 2);
 	lx = radius * cos(0 + rot);
 	ly = radius * sin(0 + rot);
 
@@ -202,12 +203,15 @@ int main()
 		//if (mouse_snapshot == g_mouse_pos)
 			//continue;
 
-		window.clear(Color(50, 50, 50));
+		window.clear(Color(10, 10, 10));
 		//window.draw(convex);
 
 		// Set start of ray-drawing line to mouse position
 		light1.UpdateLight(g_mouse_pos);
 		total_rays = 0;
+
+		ray_line[0].color = ray_color_hit;
+		ray_line[1].color = ray_color_hit;
 
 		vector<Segment*> testsegs;
 
@@ -250,7 +254,7 @@ int main()
 									testsegs[d] = &circle.m_segments[j];
 							}
 						}
-						if (rayHit.m_isHit)
+						if (rayHit.m_isHit && rayHit.intensity > 0.01f) //ignore transmission of very low intensities
 						{
 							if (!newDepth)
 							{
@@ -260,21 +264,44 @@ int main()
 							}
 
 							depth = (unsigned int)light1.traces[i].rays.size() - 1;
+		
 							
-							//Reflect
-							Ray ray1(rayHit.m_end, Reflect(rayHit.m_dir, rayHit.m_normal));
-							Ray ray2(rayHit.m_end, Refract(rayHit.m_dir, rayHit.m_normal, 1.3f));
-							ray1.m_isHit = false;
-							ray2.m_isHit = false;
-							//light1.traces[i].rays[depth].push_back(ray1);
-							light1.traces[i].rays[depth].push_back(ray2);
+							float kr=0.5f;
+							Fresnel(rayHit.m_dir, rayHit.m_normal, 1.3f, kr);
+
+							// compute refraction if it is not a case of total internal reflection
+							if (kr < 1)
+							{
+								Ray ray2(rayHit.m_end, Refract(rayHit.m_dir, rayHit.m_normal, 1.3f));
+								ray2.m_isHit = false;
+								ray2.intensity = rayHit.intensity * (1 - kr);
+								light1.traces[i].rays[depth].push_back(ray2);
+							}
+
+								Ray ray1(rayHit.m_end, Reflect(rayHit.m_dir, rayHit.m_normal));
+								ray1.m_isHit = false;
+								ray1.intensity = rayHit.intensity * kr;
+								light1.traces[i].rays[depth].push_back(ray1);
 						}
+
+						//float intensity = Clamp(rayHit.intensity, 0.05f, 1.0f);
+
+						ray_line[0].color.a = (float)ray_color_hit.a * rayHit.intensity;
+						ray_line[1].color.a = (float)ray_color_hit.a * rayHit.intensity;
+						if (ray_line[0].color.a < 1)
+						{
+							ray_line[0].color.a = 1;
+							ray_line[1].color.a = 1;
+						}
+						//ray_line[0].color = ray_color_hit;
+						//ray_line[1].color = ray_color_hit;
+
 						// Set drawing-line end to final intersection
 						ray_line[0].position = rayHit.m_pos;
 						ray_line[1].position = rayHit.m_end;
 
 						// Draw ray
-						if (rayHit.m_isHit)
+						/*if (rayHit.m_isHit)
 						{
 							ray_line[0].color = ray_color_hit;
 							ray_line[1].color = ray_color_hit;
@@ -283,7 +310,7 @@ int main()
 						{
 							ray_line[0].color = ray_color;
 							ray_line[1].color = ray_color;
-						}
+						}*/
 						total_rays++;
 						window.draw(ray_line);
 					}

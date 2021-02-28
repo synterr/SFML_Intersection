@@ -37,7 +37,7 @@ bool Ray::calc_hit(Segment &seg)
 
 	const float den = (dpx) * (dsy) - (dpy) * (dsx);
 
-	if (abs(den) < 0.1f)
+	if (abs(den) < 0.01f)
 		return false;
 		
 	const float t = ((p1.x - seg.m_p0.x) * (dsy) - (p1.y - seg.m_p0.y) * (dsx)) / den;
