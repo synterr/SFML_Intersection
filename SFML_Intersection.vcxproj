@@ -22,7 +22,7 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{1fa7e932-7b4d-4342-9ecc-9cc529586d0e}</ProjectGuid>
-    <RootNamespace>SFMLGraphics</RootNamespace>
+    <RootNamespace>SFML_Intersection</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>SFML_Intersection</ProjectName>
   </PropertyGroup>

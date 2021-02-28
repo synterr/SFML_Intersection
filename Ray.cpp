@@ -50,9 +50,7 @@ bool Ray::calc_hit(Segment &seg)
 		m_end.x = p1.x + t * -dpx;
 		m_end.y = p1.y + t * -dpy;
 		m_isHit = true;
-		
-		float l1;
-		float l2;
+
 		float l;
 		if (abs(dsy) > abs(dsx))
 			l = ((m_end.y - seg.m_p0.y) / -dsy );	//linear blend of normals
@@ -70,6 +68,3 @@ bool Ray::calc_hit(Segment &seg)
 	}
 	return false;
 }
-
-inline float Ray::VectorDotProduct(Vector2f v1, Vector2f v2) { return v1.x * v2.x + v1.y * v2.y; }
-inline Vector2f Ray::VectorNormalize(Vector2f v) { return v / sqrtf(VectorDotProduct(v, v)); }

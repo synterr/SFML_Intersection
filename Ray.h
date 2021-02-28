@@ -20,6 +20,4 @@ public:
 
 private:
 	Vector2f m_relative_end;
-	inline Vector2f VectorNormalize(Vector2f v);
-	inline float VectorDotProduct(Vector2f v1, Vector2f v2);
 };

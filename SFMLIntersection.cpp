@@ -6,14 +6,14 @@
 Vector2f g_mouse_pos = Vector2f(0, 0);    //Last Left Mouse Position
 Vector2f l_mouse_pos = Vector2f(10, 10);  //Last Right Mouse Position
 
-int  trace_density = 250;
-int	  maxdepth = 50;
+unsigned int	trace_density = 250;
+unsigned int	maxdepth = 50;
 
-const Color    ray_color = Color(255, 255, 255, 30);
-const Color    ray_color_secondary = Color(255, 100, 50, 50);
-const Color    ray_color_hit = Color(255, 255, 255, 30);
-const Color    wall_color = Color(0, 255, 0, 200);;
-const Vector2f window_size(900, 600);
+const Color		ray_color = Color(255, 255, 255, 30);
+const Color		ray_color_secondary = Color(255, 100, 50, 50);
+const Color		ray_color_hit = Color(255, 255, 255, 30);
+const Color		wall_color = Color(0, 255, 0, 200);;
+const Vector2f	window_size(900.f, 600.f);
 
 //Create light sources
 //PointLightSource light1 = PointLightSource(100.f, trace_density, g_mouse_pos, 0.f,ray_color, DegToRad(10.f));
@@ -33,10 +33,10 @@ int main()
 
 	ContextSettings settings;
 	settings.antialiasingLevel = 8;
-	RenderWindow window(VideoMode(window_size.x, window_size.y), "2D Ray Casting", Style::Close,settings);
+	RenderWindow window(VideoMode((unsigned int)window_size.x, (unsigned int)window_size.y), "2D Ray Casting", Style::Close,settings);
 	window.setFramerateLimit(120);
 	
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 	
 	Polygon circle;
 
@@ -180,11 +180,11 @@ int main()
 
 		for (int i = 0; i < light1.traces.size(); i++)
 		{
-			int depth = 0;
+			unsigned int depth = 0;
 			bool newDepth = false;
 			do
 			{
-				for (int d = depth; d < depth+1; d++)			//Rays Depth loop - should be do-loop with 
+				for (unsigned int d = depth; d < depth+1; d++)			//Rays Depth loop - should be do-loop with 
 				{
 					if (d > maxdepth)
 					{
@@ -226,7 +226,7 @@ int main()
 								newDepth = true;
 							}
 							
-							depth = light1.traces[i].rays.size()-1;
+							depth = (unsigned int)light1.traces[i].rays.size()-1;
 
 							//Vector2f newdir(light1.traces[i].rays[d][r].m_dir.x+light1.traces[i].rays[d][r].m_dir.x*sin(TWO_PI/16), light1.traces[i].rays[d][r].m_dir.y+light1.traces[i].rays[d][r].m_dir.y *cos(TWO_PI / 16));
 							Ray ray1(rayHit.m_end, rayHit.m_dir - 2.0f * VectorDotProduct(rayHit.m_dir, rayHit.m_normal) * rayHit.m_normal);
