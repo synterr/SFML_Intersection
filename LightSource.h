@@ -21,5 +21,6 @@ public:
 	float intensity;
 	Color color;
 	vector<Trace> traces;
+
 };
 

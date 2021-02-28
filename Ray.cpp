@@ -4,16 +4,21 @@ Ray::Ray(Vector2f pos, Vector2f dir)
 {
 	// Set end point relative to mouse cursor
 	// Add arbitrary length
-	m_color = Color::Magenta;
-	m_dir = VectorNormalize(dir);
+	//m_color = Color::Magenta;
+	
+	m_dir = dir;
 	m_relative_end = m_dir * 3000.f;
-	m_pos = pos + m_dir*1.f;
+	m_pos = pos + m_dir;
 	// Set end-point to (default length) distance away from mouse in set direction
 	m_end = m_pos + m_relative_end;
 
 	m_isHit = false;
 }
 
+Ray::Ray()
+{
+	m_isHit = false;
+}
 
 // Calculates intersection-point two lines
 // Used for getting intersection between Ray and wall
@@ -21,7 +26,6 @@ Ray::Ray(Vector2f pos, Vector2f dir)
 bool Ray::calc_hit(Segment &seg)
 {
 	Vector2f p1 = m_pos;
-	//p1 = p1 + m_dir * .1f; //Slight offset to avoid multiple collisions from the same segment
 	const Vector2f p2 = m_end;
 
 	// Calculates denominator of equations
@@ -33,13 +37,12 @@ bool Ray::calc_hit(Segment &seg)
 
 	const float den = (dpx) * (dsy) - (dpy) * (dsx);
 
-	if (den == 0)
+	if (abs(den) < 0.001f)
 		return false;
 		
 	const float t = ((p1.x - seg.m_p0.x) * (dsy) - (p1.y - seg.m_p0.y) * (dsx)) / den;
 	const float u = -((dpx) * (p1.y - seg.m_p0.y) - (dpy) * (p1.x - seg.m_p0.x)) / den;
 
-	// Make normal smoothing below!!!!!!!!!!!!!!!!!!!!!
 	// If there's an intersection...
 	if (t > 0 && t < 1 && u > 0 && u < 1)
 	{
@@ -48,19 +51,21 @@ bool Ray::calc_hit(Segment &seg)
 		m_end.y = p1.y + t * -dpy;
 		m_isHit = true;
 		
+		float l1;
+		float l2;
 		float l;
-
-		if (abs(dsy) >= abs(dsx))
+		if (abs(dsy) > abs(dsx))
 			l = ((m_end.y - seg.m_p0.y) / -dsy );	//linear blend of normals
 		else
 			l = ((m_end.x - seg.m_p0.x) / -dsx );	//linear blend of normals
-		
-		m_n1 = seg.m_n0* (1 - l) + seg.m_n1 * (l);
-#ifdef NDEBUG
+
+
+		m_normal = seg.m_n0 * (1.f-l ) + seg.m_n1 * (l);
+
 		//printf("n0: %f, %f n1: %f, %f \n", seg.m_n0.x, seg.m_n0.y, seg.m_n1.x, seg.m_n1.y);
 		//printf("l: %f, end: %f, absdsx: %f, segx: %f \n", l, m_end.x, dsx, seg.m_p0.x);
-		//printf("main0: %f, %f \n\n", m_n1.x, m_n1.y);
-#endif
+		//printf("main0: %f, %f \n\n", m_normal.x, m_normal.y);
+
 		return true;
 	}
 	return false;

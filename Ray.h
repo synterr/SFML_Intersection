@@ -10,11 +10,11 @@ public:
 	Vector2f m_end;
 	Vector2f m_pos;
 	Vector2f m_dir;
-	Vector2f m_n1; //Normal 1 - not smoothed
+	Vector2f m_normal; 
 	Color m_color;
 	bool m_isHit;
 
-	Ray() {};
+	Ray();
 	Ray(Vector2f pos, Vector2f dir);
 	bool calc_hit(Segment& seg);
 

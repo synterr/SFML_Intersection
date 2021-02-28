@@ -153,6 +153,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="LightSource.cpp" />
+    <ClCompile Include="LinearLightSource.cpp" />
     <ClCompile Include="PointLightSource.cpp" />
     <ClCompile Include="Polygon.cpp" />
     <ClCompile Include="Ray.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="FPS.h" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="LightSource.h" />
+    <ClInclude Include="LinearLightSource.h" />
     <ClInclude Include="PointLightSource.h" />
     <ClInclude Include="Polygon.h" />
     <ClInclude Include="Ray.h" />

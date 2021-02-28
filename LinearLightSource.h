@@ -4,11 +4,11 @@
 
 using namespace sf;
 
-class PointLightSource : public LightSource
+class LinearLightSource : public LightSource
 {
 public:
-	PointLightSource(float intensity, long rayCount, Vector2f position, float angle, Color color, float spreadAngle);
-	~PointLightSource();
+	LinearLightSource(float intensity, long rayCount, Vector2f position, float angle, Color color, float spreadAngle);
+	~LinearLightSource();
 	void UpdateLight(Vector2f pos);
 	void UpdateLight();
 
