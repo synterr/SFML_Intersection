@@ -2,6 +2,9 @@
 #include "globals.h"
 #include <iostream>
 #include "Polygon.h"
+#include "PointLightSource.h"
+#include "LinearLightSource.h"
+
 
 Vector2f g_mouse_pos = Vector2f(0, 0);    //Last Left Mouse Position
 Vector2f l_mouse_pos = Vector2f(10, 10);  //Last Right Mouse Position
@@ -12,7 +15,7 @@ unsigned int	trace_density = 500;//500
 unsigned int	maxdepth = 16;//8
 
 
-const Vector2f	window_size(900.f, 600.f);
+const Vector2f	window_size(1280.f, 720.f);
 
 
 int main()
@@ -40,8 +43,10 @@ int main()
 	const Color		wall_color = Color(0, 255, 0, 200);
 
 	//Create light sources
-	PointLightSource light1 = PointLightSource(1.f, trace_density, g_mouse_pos, 0.f, ray_color, DegToRad(30.f));
+	g_mouse_pos = Vector2f(window_size.x  - 20, window_size.y / 2);
+	PointLightSource light1 = PointLightSource(1.f, trace_density, g_mouse_pos, TWO_PI/2, ray_color, DegToRad(30.f));
 	//LinearLightSource light1 = LinearLightSource(1.f, trace_density, g_mouse_pos, 0.f, ray_color, 60.f);
+	light1.UpdateLight();
 
 	ContextSettings settings;
 	settings.antialiasingLevel = 8;
@@ -73,7 +78,7 @@ int main()
 	//	ly = y;
 	//}
 
-	unsigned int maxPoints = 360;
+	unsigned int maxPoints = 100;
 	float radius = 250.f;
 	float rot = -TWO_PI / 8;
 	Vector2f center = Vector2f(window_size.x / 2 + 300, window_size.y / 2);
@@ -95,10 +100,10 @@ int main()
 	//}
 
 
-	maxPoints = 360 / 2;
+	maxPoints = 100 / 2;
 	radius = 50;
 	rot = -TWO_PI / 9;
-	center = Vector2f(window_size.x / 2-100, window_size.y / 2);
+	center = Vector2f(window_size.x / 2-200, window_size.y / 2);
 	lx = radius * cos(0 + rot);
 	ly = radius * sin(0 + rot);
 
@@ -254,7 +259,7 @@ int main()
 									testsegs[d] = &circle.m_segments[j];
 							}
 						}
-						if (rayHit.m_isHit && rayHit.intensity > 0.01f) //ignore transmission of very low intensities
+						if (rayHit.m_isHit && rayHit.intensity > 0.02f) //ignore transmission of very low intensities
 						{
 							if (!newDepth)
 							{
@@ -267,21 +272,24 @@ int main()
 		
 							
 							float kr=0.5f;
-							Fresnel(rayHit.m_dir, rayHit.m_normal, 1.3f, kr);
+							FresnelS(rayHit.m_dir, rayHit.m_normal, 1.5f, kr);
 
 							// compute refraction if it is not a case of total internal reflection
 							if (kr < 1)
 							{
-								Ray ray2(rayHit.m_end, Refract(rayHit.m_dir, rayHit.m_normal, 1.3f));
+								Ray ray2(rayHit.m_end, Refract(rayHit.m_dir, rayHit.m_normal, 1.5f));
 								ray2.m_isHit = false;
 								ray2.intensity = rayHit.intensity * (1 - kr);
 								light1.traces[i].rays[depth].push_back(ray2);
 							}
+								
+							if (kr >= 1.f)
+								kr = 0.1f;
 
-								Ray ray1(rayHit.m_end, Reflect(rayHit.m_dir, rayHit.m_normal));
-								ray1.m_isHit = false;
-								ray1.intensity = rayHit.intensity * kr;
-								light1.traces[i].rays[depth].push_back(ray1);
+							Ray ray1(rayHit.m_end, Reflect(rayHit.m_dir, rayHit.m_normal));
+							ray1.m_isHit = false;
+							ray1.intensity = rayHit.intensity * kr;
+							light1.traces[i].rays[depth].push_back(ray1);
 						}
 
 						//float intensity = Clamp(rayHit.intensity, 0.05f, 1.0f);

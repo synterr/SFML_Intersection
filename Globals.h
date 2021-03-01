@@ -4,8 +4,6 @@
 #include <sstream>
 #include "ray.h"
 #include "fps.h"
-#include "PointLightSource.h"
-#include "LinearLightSource.h"
 
 //#include "wall.h"
 
@@ -64,20 +62,53 @@ void Fresnel(Vector2f &dir, Vector2f &normal, float ior, float& kr)
     float etai = 1, etat = ior;
     if (cosi > 0) { std::swap(etai, etat); }
     // Compute sini using Snell's law
-    float sint = etai / etat * sqrtf(std::max(0.f, 1 - cosi * cosi));
+    float sint = etai / etat * sqrtf(std::max(0.f, 1.0f - cosi * cosi));
     // Total internal reflection
-    if (sint >= 1) {
+    if (sint >= 1.f)
+    {
         kr = 1;
     }
-    else {
-        float cost = sqrtf(std::max(0.f, 1 - sint * sint));
+    else
+    {
+        float cost = (std::max(0.f, 1.0f - abs(sint) ));
         cosi = fabsf(cosi);
         float Rs = ((etat * cosi) - (etai * cost)) / ((etat * cosi) + (etai * cost));
         float Rp = ((etai * cosi) - (etat * cost)) / ((etai * cosi) + (etat * cost));
-        kr = (Rs * Rs + Rp * Rp) / 2;
+        kr = (Rs*Rs + Rp*Rp)/2.f;
     }
     // As a consequence of the conservation of energy, transmittance is given by:
     // kt = 1 - kr;
+}
+
+void FresnelS(Vector2f& dir, Vector2f& normal, float ior, float& kr)
+{
+    // Schlick aproximation
+    float etai = 1.0f, etat = ior;
+    float r0 = (etai - etat) / (etai + etat);
+    r0 *= r0;
+    float cosi = -VectorDotProduct(normal, dir);
+    if (cosi > 0) { std::swap(etai, etat); }
+    else { cosi = -cosi; }
+    if (etai > etat)
+    {
+        float n = etai / etat;
+        float sinT2 = n * n * (1.0f - cosi * cosi);
+        // Total internal reflection
+        if (sinT2 > 1.0f)
+        {
+            kr = 1.0f;
+            return;
+        }
+        cosi = sqrt(1.0 - sinT2);
+    }
+    float x = 1.0f - cosi;
+    float ret = r0 + (1.0f - r0) * x * x * x * x * x;
+
+    // adjust reflect multiplier for object reflectivity
+    //float OBJECT_REFLECTIVITY = 0.3f;
+        //kr = (OBJECT_REFLECTIVITY + (1.0f - OBJECT_REFLECTIVITY) * ret);
+        kr = ret;
+    return;
 }
 
 inline float RadToDeg(float Rad) {	return Rad / TWO_PI * 90.f;}

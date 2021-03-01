@@ -45,7 +45,7 @@ void PointLightSource::UpdateLight()
 			vector<Ray> rays;						//Creating [0] rays vector (first cascade)
 			trace.rays.push_back(rays);				//Push initial cascade into trace
 			Ray ray = Ray(this->position, Vector2f(x, y));
-			ray.intensity = this->intensity;
+			ray.intensity = this->intensity*sin(3.1415926f*a/raySpread);
 			trace.rays[0].push_back(ray);		//Push ray[0,0] into trace
 			traces.push_back(trace);				//Push trace to traces vector
 		}

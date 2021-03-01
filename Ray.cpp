@@ -58,7 +58,7 @@ bool Ray::calc_hit(Segment &seg)
 			l = ((m_end.x - seg.m_p0.x) / -dsx );	//linear blend of normals
 
 
-		m_normal = seg.m_n0 * (1.f-l ) + seg.m_n1 * (l);
+		m_normal = (seg.m_n0 * (1.f-l ) + seg.m_n1 * (l));
 
 		//printf("n0: %f, %f n1: %f, %f \n", seg.m_n0.x, seg.m_n0.y, seg.m_n1.x, seg.m_n1.y);
 		//printf("l: %f, end: %f, absdsx: %f, segx: %f \n", l, m_end.x, dsx, seg.m_p0.x);

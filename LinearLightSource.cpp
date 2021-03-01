@@ -46,7 +46,7 @@ void LinearLightSource::UpdateLight()
 			vector<Ray> rays;						//Creating [0] rays vector (first cascade)
 			trace.rays.push_back(rays);				//Push initial cascade into trace
 			Ray ray = Ray(pos, Vector2f(x, y));
-			ray.intensity = this->intensity;
+			ray.intensity = this->intensity * cos(3.1415926f * l / raySpread);;
 			trace.rays[0].push_back(ray);		//Push ray[0,0] into trace
 			traces.push_back(trace);				//Push trace to traces vector
 		}
