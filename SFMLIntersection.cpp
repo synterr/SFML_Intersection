@@ -78,7 +78,7 @@ int main()
 	//	ly = y;
 	//}
 
-	unsigned int maxPoints = 100;
+	unsigned int maxPoints = 180;
 	float radius = 250.f;
 	float rot = -TWO_PI / 8;
 	Vector2f center = Vector2f(window_size.x / 2 + 300, window_size.y / 2);
@@ -100,7 +100,7 @@ int main()
 	//}
 
 
-	maxPoints = 100 / 2;
+	maxPoints = 180 / 2;
 	radius = 50;
 	rot = -TWO_PI / 9;
 	center = Vector2f(window_size.x / 2-200, window_size.y / 2);
@@ -121,7 +121,7 @@ int main()
 		ly = y;
 	}
 
-	maxPoints = 360 / 2;
+	maxPoints = 180;
 	radius = 100;
 	rot = -TWO_PI / 9;
 	center = Vector2f(window_size.x / 2 +150, window_size.y / 2);
@@ -196,6 +196,7 @@ int main()
 			g_mouse_pos = Vector2f(Mouse::getPosition(window));
 			//light1.angle = atan2(l_mouse_pos.y - g_mouse_pos.y, l_mouse_pos.x - g_mouse_pos.x);
 			//light1.UpdateLight(g_mouse_pos);
+			//window.clear(Color(10, 10, 10));
 		}
 
 		if (Mouse::isButtonPressed(Mouse::Button::Right))
@@ -203,6 +204,7 @@ int main()
 			l_mouse_pos = Vector2f(Mouse::getPosition(window));
 			light1.angle = atan2(l_mouse_pos.y - g_mouse_pos.y, l_mouse_pos.x - g_mouse_pos.x);
 			//light1.UpdateLight(g_mouse_pos);
+			//window.clear(Color(10, 10, 10));
 		}
 		// If mouse if the same as previous frame, move on to the next
 		//if (mouse_snapshot == g_mouse_pos)
@@ -259,7 +261,7 @@ int main()
 									testsegs[d] = &circle.m_segments[j];
 							}
 						}
-						if (rayHit.m_isHit && rayHit.intensity > 0.02f) //ignore transmission of very low intensities
+						if (rayHit.m_isHit && rayHit.intensity > 0.001f) // 0.02 ignore transmission of very low intensities
 						{
 							if (!newDepth)
 							{
@@ -283,8 +285,8 @@ int main()
 								light1.traces[i].rays[depth].push_back(ray2);
 							}
 								
-							if (kr >= 1.f)
-								kr = 0.1f;
+							//if (kr >= 1.f)
+								kr = 0.2f; // 0.1 Reduce intensity for internal reflections to avoid calculations
 
 							Ray ray1(rayHit.m_end, Reflect(rayHit.m_dir, rayHit.m_normal));
 							ray1.m_isHit = false;

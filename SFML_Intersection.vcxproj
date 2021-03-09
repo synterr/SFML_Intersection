@@ -152,6 +152,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Lens.cpp" />
     <ClCompile Include="LightSource.cpp" />
     <ClCompile Include="LinearLightSource.cpp" />
     <ClCompile Include="PointLightSource.cpp" />
@@ -164,6 +165,7 @@
   <ItemGroup>
     <ClInclude Include="FPS.h" />
     <ClInclude Include="Globals.h" />
+    <ClInclude Include="Lens.h" />
     <ClInclude Include="LightSource.h" />
     <ClInclude Include="LinearLightSource.h" />
     <ClInclude Include="PointLightSource.h" />

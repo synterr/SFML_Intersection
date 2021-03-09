@@ -34,9 +34,9 @@ void PointLightSource::UpdateLight()
 		float step = raySpread / this->rayCount;
 		for (float a = 0; a <= raySpread; a += step)
 		{
-			//float randomizer = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-			//const float x = cos(randomizer * raySpread - raySpread / 2 + this->angle);
-			//const float y = sin(randomizer * raySpread - raySpread / 2 + this->angle);
+			/*float randomizer = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+			const float x = cos(randomizer * raySpread - raySpread / 2 + this->angle);
+			const float y = sin(randomizer * raySpread - raySpread / 2 + this->angle);*/
 
 			const float x = cos(a  - raySpread / 2 + this->angle);
 			const float y = sin(a  - raySpread / 2 + this->angle);
