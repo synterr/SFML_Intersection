@@ -1,3 +1,5 @@
+//Segment is defined by points P0, P1 and normals for each of these points
+
 #pragma once
 #include <SFML/Graphics.hpp>
 using namespace sf;
@@ -6,7 +8,7 @@ class Segment
 {
 public:
 	
-	float ior;
+	float ior;     //IOR for current segment - defined by Lens class
 	Vector2f m_p0;
 	Vector2f m_p1;
 	Vector2f m_n0; //normal vector1

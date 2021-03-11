@@ -10,8 +10,6 @@
 using namespace sf;
 using namespace std;
 
-extern bool smoothing = true;
-
 inline float RadToDeg(float Rad);
 inline float DegToRad(float Deg);
 

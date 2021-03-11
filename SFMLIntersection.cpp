@@ -4,7 +4,7 @@
 #include "Polygon.h"
 #include "PointLightSource.h"
 #include "LinearLightSource.h"
-
+#include "Lens.h"
 
 Vector2f g_mouse_pos = Vector2f(0, 0);    //Last Left Mouse Position
 Vector2f l_mouse_pos = Vector2f(10, 10);  //Last Right Mouse Position
@@ -20,7 +20,7 @@ const Vector2f	window_size(1280.f, 720.f);
 
 int main()
 {
-	smoothing = true;
+	//smoothing = true;
 	FPS fps;
 	long total_rays = 0;
 	Font font;
@@ -55,6 +55,8 @@ int main()
 
 	srand((unsigned int)time(NULL));
 
+	Lens lens1(Vector2f(window_size.x / 2, window_size.y / 2), 200.0f, -300.0f, 100.0f, 100.0f, 1.5f);
+	lens1.Update(lens1.m_pos);
 	Polygon circle;
 
 	//unsigned int maxPoints = 720;
@@ -78,14 +80,14 @@ int main()
 	//	ly = y;
 	//}
 
-	unsigned int maxPoints = 180;
-	float radius = 250.f;
-	float rot = -TWO_PI / 8;
-	Vector2f center = Vector2f(window_size.x / 2 + 300, window_size.y / 2);
-	float lx = radius * cos(0 + rot);
-	float ly = radius * sin(0 + rot);
+	//unsigned int maxPoints = 180;
+	//float radius = 250.f;
+	//float rot = -TWO_PI / 8;
+	//Vector2f center = Vector2f(window_size.x / 2 + 300, window_size.y / 2);
+	//float lx = radius * cos(0 + rot);
+	//float ly = radius * sin(0 + rot);
 
-	float step = TWO_PI / (float)maxPoints * 2.f;
+	//float step = TWO_PI / (float)maxPoints * 2.f;
 
 	//for (float a = 0 + step; a < TWO_PI / 2.5 + step / 100.f; a += step)
 	//{
@@ -100,50 +102,50 @@ int main()
 	//}
 
 
-	maxPoints = 180 / 2;
-	radius = 50;
-	rot = -TWO_PI / 9;
-	center = Vector2f(window_size.x / 2-200, window_size.y / 2);
-	lx = radius * cos(0 + rot);
-	ly = radius * sin(0 + rot);
+	//maxPoints = 180 / 2;
+	//radius = 50;
+	//rot = -TWO_PI / 9;
+	//center = Vector2f(window_size.x / 2-200, window_size.y / 2);
+	//lx = radius * cos(0 + rot);
+	//ly = radius * sin(0 + rot);
 
-	step = TWO_PI / (float)maxPoints * 2.f;
+	//step = TWO_PI / (float)maxPoints * 2.f;
 
-	for (float a = 0 + step; a < TWO_PI+ step / 100.f; a += step)
-	{
-		float x = radius * cos(a + rot);
-		float y = radius * sin(a + rot);
+	//for (float a = 0 + step; a < TWO_PI+ step / 100.f; a += step)
+	//{
+	//	float x = radius * cos(a + rot);
+	//	float y = radius * sin(a + rot);
 
-		circle.m_points.push_back(Vector2f(center.x + lx, center.y + ly));
-		circle.m_points.push_back(Vector2f(center.x + x, center.y + y));
+	//	circle.m_points.push_back(Vector2f(center.x + lx, center.y + ly));
+	//	circle.m_points.push_back(Vector2f(center.x + x, center.y + y));
 
-		lx = x;
-		ly = y;
-	}
+	//	lx = x;
+	//	ly = y;
+	//}
 
-	maxPoints = 180;
-	radius = 100;
-	rot = -TWO_PI / 9;
-	center = Vector2f(window_size.x / 2 +150, window_size.y / 2);
-	lx = radius * cos(0 + rot);
-	ly = radius * sin(0 + rot);
+	//maxPoints = 180;
+	//radius = 100;
+	//rot = -TWO_PI / 9;
+	//center = Vector2f(window_size.x / 2 +150, window_size.y / 2);
+	//lx = radius * cos(0 + rot);
+	//ly = radius * sin(0 + rot);
 
-	step = TWO_PI / (float)maxPoints * 2.f;
+	//step = TWO_PI / (float)maxPoints * 2.f;
 
-	for (float a = 0 + step; a < TWO_PI + step / 100.f; a += step)
-	{
-		float x = radius * cos(a + rot);
-		float y = radius * sin(a + rot);
+	//for (float a = 0 + step; a < TWO_PI + step / 100.f; a += step)
+	//{
+	//	float x = radius * cos(a + rot);
+	//	float y = radius * sin(a + rot);
 
-		circle.m_points.push_back(Vector2f(center.x + lx, center.y + ly));
-		circle.m_points.push_back(Vector2f(center.x + x, center.y + y));
+	//	circle.m_points.push_back(Vector2f(center.x + lx, center.y + ly));
+	//	circle.m_points.push_back(Vector2f(center.x + x, center.y + y));
 
-		lx = x;
-		ly = y;
-	}
-	circle.generateSegments();
-	if (smoothing)
-		circle.smoothNormals();
+	//	lx = x;
+	//	ly = y;
+	//}
+	//circle.generateSegments();
+	//if (smoothing)
+		//circle.smoothNormals();
 
 
 	// Do this if want to have segment that is closing shape (last point to first point)
@@ -251,14 +253,14 @@ int main()
 
 						if (!light1.traces[i].rays[d][r].calc_hit(testseg)) //Check last hited segment first
 						{
-							for (int j = 0; j < circle.m_segments.size(); j++)
+							for (int j = 0; j < lens1.m_poly.m_segments.size(); j++)
 							{
 								// Calculate ray end-point
 								// When an intersection is found, the end-point is set to that intersection, meaning the next check will check for walls
 								// between start and the new end-point. This means the ray will always go to the nearest wall
 
-								if (rayHit.calc_hit(circle.m_segments[j]))
-									testsegs[d] = &circle.m_segments[j];
+								if (rayHit.calc_hit(lens1.m_poly.m_segments[j]))
+									testsegs[d] = &lens1.m_poly.m_segments[j];
 							}
 						}
 						if (rayHit.m_isHit && rayHit.intensity > 0.001f) // 0.02 ignore transmission of very low intensities
@@ -274,12 +276,12 @@ int main()
 		
 							
 							float kr=0.5f;
-							FresnelS(rayHit.m_dir, rayHit.m_normal, 1.5f, kr);
+							FresnelS(rayHit.m_dir, rayHit.m_normal, lens1.m_ior, kr);
 
 							// compute refraction if it is not a case of total internal reflection
 							if (kr < 1)
 							{
-								Ray ray2(rayHit.m_end, Refract(rayHit.m_dir, rayHit.m_normal, 1.5f));
+								Ray ray2(rayHit.m_end, Refract(rayHit.m_dir, rayHit.m_normal, lens1.m_ior));
 								ray2.m_isHit = false;
 								ray2.intensity = rayHit.intensity * (1 - kr);
 								light1.traces[i].rays[depth].push_back(ray2);
@@ -328,7 +330,6 @@ int main()
 			} while (newDepth == true);
 		}
 
-		// Draw walls
 		for (int i = 0; i < circle.m_segments.size(); i++)
 		{
 			wall_line[0].position = circle.m_segments[i].m_p0;
@@ -345,6 +346,7 @@ int main()
 			window.draw(cir);*/
 
 		}
+		lens1.Draw(window);
 
 
 #ifdef NDEBUG

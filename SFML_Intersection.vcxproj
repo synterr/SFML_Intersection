@@ -155,6 +155,7 @@
     <ClCompile Include="Lens.cpp" />
     <ClCompile Include="LightSource.cpp" />
     <ClCompile Include="LinearLightSource.cpp" />
+    <ClCompile Include="Optical.cpp" />
     <ClCompile Include="PointLightSource.cpp" />
     <ClCompile Include="Polygon.cpp" />
     <ClCompile Include="Ray.cpp" />
@@ -168,6 +169,7 @@
     <ClInclude Include="Lens.h" />
     <ClInclude Include="LightSource.h" />
     <ClInclude Include="LinearLightSource.h" />
+    <ClInclude Include="Optical.h" />
     <ClInclude Include="PointLightSource.h" />
     <ClInclude Include="Polygon.h" />
     <ClInclude Include="Ray.h" />

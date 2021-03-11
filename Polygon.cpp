@@ -7,7 +7,7 @@ Polygon::Polygon()
 Polygon::~Polygon()
 {
 }
-
+//probably should be moved to Lens class
 void Polygon::generateSegments()
 {
 	int i = 0;
@@ -32,6 +32,46 @@ void Polygon::generateSegments()
 #endif	
 }
 
+void Polygon::generateSegmentsNew(Vector2f pos)
+{
+	int i = 0;
+	Vector2f lastPoint;
+	Vector2f curPoint;
+
+	for (auto it : this->m_points)
+	{
+		if (i > 0) //if i > 0 for continous convex
+		{
+			curPoint = it;
+			curPoint.x += pos.x;
+			curPoint.y += pos.y;
+
+			this->m_segments.push_back(Segment(lastPoint, curPoint)); //New segment already has normals calculated in constructor
+			if (m_segments.size() > 1)
+			{
+				Vector2f smoothedNormal;
+				smoothedNormal = VectorNormalize(m_segments[m_segments.size() - 2].m_n1 + m_segments[m_segments.size()-1].m_n0);
+				m_segments[m_segments.size() - 2].m_n1 = smoothedNormal;
+				m_segments[m_segments.size()-1].m_n0 = smoothedNormal;
+			}
+		}
+		lastPoint = it;
+		lastPoint.x += pos.x;
+		lastPoint.y += pos.y;
+		i++;
+	}
+
+	printf("Points: %i Segments: %i\n", (int)m_points.size(), (int)m_segments.size());
+
+	for (int i = 0; i < this->m_segments.size(); i++)
+	{
+		printf("Segment: %i\n", i);
+		printf("p0: %f, %f p1: %f, %f \n", this->m_segments[i].m_p0.x, this->m_segments[i].m_p0.y, this->m_segments[i].m_p1.x, this->m_segments[i].m_p1.y);
+		printf("n0: %f, %f n1: %f, %f \n", this->m_segments[i].m_n0.x, this->m_segments[i].m_n0.y, this->m_segments[i].m_n1.x, this->m_segments[i].m_n1.y);
+	}
+}
+
+//probably should be moved to Lens class
 void Polygon::smoothNormals()
 {
 	
@@ -77,7 +117,7 @@ void Polygon::smoothNormals()
 		printf("n0: %f, %f n1: %f, %f \n", this->m_segments[i].m_n0.x, this->m_segments[i].m_n0.y, this->m_segments[i].m_n1.x, this->m_segments[i].m_n1.y);
 	}
 }
-
+//probably should be moved to Lens class
 Segment& Polygon::findSegmentByPoint(Segment& s, bool& found, int p0_or_1, int f0_or_1)
 {
 	Vector2f *point;
@@ -106,7 +146,7 @@ Segment& Polygon::findSegmentByPoint(Segment& s, bool& found, int p0_or_1, int f
 	found = false;
 	return s;
 }
-
+//probably should be moved to Lens class
 float Polygon::VectorCmp(Vector2f& v0, Vector2f& v1)
 {
 	float dx = abs(v0.x - v1.x);
@@ -114,3 +154,7 @@ float Polygon::VectorCmp(Vector2f& v0, Vector2f& v1)
 
 	return dx + dy;
 }
+
+inline float Polygon::VectorDotProduct(Vector2f v1, Vector2f v2) { return v1.x * v2.x + v1.y * v2.y; }
+
+inline Vector2f Polygon::VectorNormalize(Vector2f v) { return v / sqrtf(VectorDotProduct(v, v)); }

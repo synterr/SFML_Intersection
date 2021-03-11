@@ -42,6 +42,9 @@
     <ClCompile Include="Lens.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Optical.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Segment.h">
@@ -72,6 +75,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Lens.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Optical.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

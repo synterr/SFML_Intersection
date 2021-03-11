@@ -20,9 +20,6 @@ Ray::Ray()
 	m_isHit = false;
 }
 
-// Calculates intersection-point two lines
-// Used for getting intersection between Ray and wall
-// More or less black-box code
 bool Ray::calc_hit(Segment &seg)
 {
 	Vector2f p1 = m_pos;
@@ -37,6 +34,7 @@ bool Ray::calc_hit(Segment &seg)
 
 	const float den = (dpx) * (dsy) - (dpy) * (dsx);
 
+	//parallel vectors
 	if (abs(den) < 0.01f)
 		return false;
 		
@@ -49,7 +47,6 @@ bool Ray::calc_hit(Segment &seg)
 		// Gets intersection point
 		m_end.x = p1.x + t * -dpx;
 		m_end.y = p1.y + t * -dpy;
-		m_isHit = true;
 
 		float l;
 		if (abs(dsy) > abs(dsx))
@@ -57,8 +54,9 @@ bool Ray::calc_hit(Segment &seg)
 		else
 			l = ((m_end.x - seg.m_p0.x) / -dsx );	//linear blend of normals
 
-
+		//store calculated normal from blend calculations
 		m_normal = (seg.m_n0 * (1.f-l ) + seg.m_n1 * (l));
+		m_isHit = true;
 
 		//printf("n0: %f, %f n1: %f, %f \n", seg.m_n0.x, seg.m_n0.y, seg.m_n1.x, seg.m_n1.y);
 		//printf("l: %f, end: %f, absdsx: %f, segx: %f \n", l, m_end.x, dsx, seg.m_p0.x);
