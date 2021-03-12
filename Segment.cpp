@@ -1,7 +1,8 @@
 #include "Segment.h"
 
-Segment::Segment(sf::Vector2f p0, sf::Vector2f p1)
+Segment::Segment(sf::Vector2f p0, sf::Vector2f p1, bool isSmooth)
 {
+	this->m_smooth = isSmooth;
 	this->m_p0 = p0;
 	this->m_p1 = p1;
 	float dx = m_p1.x - m_p0.x;

@@ -55,7 +55,7 @@ int main()
 
 	srand((unsigned int)time(NULL));
 
-	Lens lens1(Vector2f(window_size.x / 2, window_size.y / 2), 200.0f, -300.0f, 100.0f, 100.0f, 1.5f);
+	Lens lens1(Vector2f(window_size.x / 2, window_size.y / 2), -400.0f, -400.0f, 200.0f, 50.0f, 1.5f);
 	lens1.Update(lens1.m_pos);
 	Polygon circle;
 
@@ -238,7 +238,7 @@ int main()
 						break;
 					}
 					//Prepare test segment
-					Segment testseg(Vector2f(0.f, 0.f), Vector2f(0.f, 0.f));
+					Segment testseg(Vector2f(0.f, 0.f), Vector2f(0.f, 0.f), false);
 					if (testsegs.size() - 1 >= depth && testsegs.size() > 0)
 						testseg = *testsegs[d];			//Set previously found segment if existing
 					else

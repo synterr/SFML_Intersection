@@ -15,13 +15,13 @@ void Polygon::generateSegments()
 	for (auto it : this->m_points)
 	{
 		if (i % 2 != 0) //if i > 0 for continous convex
-			this->m_segments.push_back(Segment(lastPoint, it));
+			this->m_segments.push_back(Segment(lastPoint, it, true));
 		lastPoint = it;
 		i++;
 	}
 
 #ifdef NDEBUG
-		printf("Points: %i Segments: %i\n", (int)m_points.size(), (int)m_segments.size());
+	printf("Points: %i Segments: %i\n", (int)m_points.size(), (int)m_segments.size());
 
 	for (int i = 0; i < this->m_segments.size(); i++)
 	{
@@ -32,7 +32,7 @@ void Polygon::generateSegments()
 #endif	
 }
 
-void Polygon::generateSegmentsNew(Vector2f pos)
+void Polygon::generateSegmentsNew(Vector2f pos, bool isSmooth, int startIndex)
 {
 	int i = 0;
 	Vector2f lastPoint;
@@ -46,14 +46,15 @@ void Polygon::generateSegmentsNew(Vector2f pos)
 			curPoint.x += pos.x;
 			curPoint.y += pos.y;
 
-			this->m_segments.push_back(Segment(lastPoint, curPoint)); //New segment already has normals calculated in constructor
-			if (m_segments.size() > 1)
+			if (i >= startIndex)
+				this->m_segments.push_back(Segment(lastPoint, curPoint, isSmooth)); //New segment already has normals calculated in constructor
+			/*if (m_segments.size() > 1 && smoothNormals)
 			{
 				Vector2f smoothedNormal;
 				smoothedNormal = VectorNormalize(m_segments[m_segments.size() - 2].m_n1 + m_segments[m_segments.size()-1].m_n0);
 				m_segments[m_segments.size() - 2].m_n1 = smoothedNormal;
 				m_segments[m_segments.size()-1].m_n0 = smoothedNormal;
-			}
+			}*/
 		}
 		lastPoint = it;
 		lastPoint.x += pos.x;
@@ -74,7 +75,7 @@ void Polygon::generateSegmentsNew(Vector2f pos)
 //probably should be moved to Lens class
 void Polygon::smoothNormals()
 {
-	
+
 	for (int i = 0; i < this->m_segments.size(); i++)
 	{
 		Segment* ptr;
@@ -117,10 +118,29 @@ void Polygon::smoothNormals()
 		printf("n0: %f, %f n1: %f, %f \n", this->m_segments[i].m_n0.x, this->m_segments[i].m_n0.y, this->m_segments[i].m_n1.x, this->m_segments[i].m_n1.y);
 	}
 }
+
+void Polygon::smoothNormalsNew()
+{
+
+	for (int i = 0; i < this->m_segments.size() - 1; i++)
+	{
+		if (m_segments.size() > 1)
+		{
+			if (m_segments[i].m_smooth && m_segments[i + 1].m_smooth)
+			{
+				Vector2f smoothedNormal;
+				smoothedNormal = VectorNormalize(m_segments[i].m_n1 + m_segments[i + 1].m_n0);
+				m_segments[i].m_n1 = smoothedNormal;
+				m_segments[i + 1].m_n0 = smoothedNormal;
+			}
+		}
+	}
+}
+
 //probably should be moved to Lens class
 Segment& Polygon::findSegmentByPoint(Segment& s, bool& found, int p0_or_1, int f0_or_1)
 {
-	Vector2f *point;
+	Vector2f* point;
 
 	if (p0_or_1 == 0)
 		point = &s.m_p0;
@@ -137,7 +157,7 @@ Segment& Polygon::findSegmentByPoint(Segment& s, bool& found, int p0_or_1, int f
 			found = true;
 			return m_segments[i];
 		}
-		if (VectorCmp(m_segments[i].m_p1, *point) < 0.1f  && f0_or_1 == 1)
+		if (VectorCmp(m_segments[i].m_p1, *point) < 0.1f && f0_or_1 == 1)
 		{
 			found = true;
 			return m_segments[i];
