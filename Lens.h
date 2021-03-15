@@ -14,7 +14,7 @@ public:
 	Lens();
 	Lens(Vector2f pos, float r1, float r2, float d, float l, float ior);
 	~Lens();
-	void Update(Vector2f pos);
+	void Update(Vector2f pos, float angle = 0);
 	void Draw(RenderWindow& window);
 
 public:
@@ -26,5 +26,6 @@ public:
 	Polygon m_poly;
 
 private:
+	void RotatePoint(Vector2f& p, Vector2f c, float angle);
 };
 

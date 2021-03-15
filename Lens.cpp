@@ -2,6 +2,7 @@
 
 Lens::Lens()
 {
+	m_angle = 0;
 	m_pos = Vector2f(100.f, 100.f);
 	m_R1 = 1.0f;
 	m_R2 = 1.0f;
@@ -12,6 +13,7 @@ Lens::Lens()
 
 Lens::Lens(Vector2f pos, float r1, float r2, float d, float l, float ior)
 {
+	m_angle = 0;
 	m_pos = pos;
 	m_R1 = r1;
 	m_R2 = -r2;
@@ -24,32 +26,50 @@ Lens::~Lens()
 {
 }
 
-void Lens::Update(Vector2f pos)
+void Lens::Update(Vector2f pos, float angle)
 {
+	m_poly.m_points.clear();
+	m_poly.m_segments.clear();
 	m_pos = pos;
+	m_angle = angle;
+	
+	this->m_bounds.top = m_pos.y - m_D / 2.f;
+	this->m_bounds.left = m_pos.x - m_L;
+	this->m_bounds.width = m_L*2.f ;
+	this->m_bounds.height = m_D;
+
 	constexpr auto TWO_PI = 3.14159265358979f * 2;
 	int currPointIndex = 0;
 	
+	unsigned int maxPoints = 40;
+	
 	//Construct bulk rectangle top surface
 	{
-		m_poly.m_points.push_back(Vector2f(-m_L/2, -m_D/2));
-		m_poly.m_points.push_back(Vector2f(m_L / 2, -m_D / 2));
+		for (float l = 0; l <= m_L; l += m_L / ((float)maxPoints / 10.f))
+		{
+			Vector2f point = Vector2f(l - m_L / 2, -m_D / 2);
+			RotatePoint(point, Vector2f(0.f, 0.f), m_angle);
+			m_poly.m_points.push_back(point);
+		}
 
-		m_poly.generateSegmentsNew(m_pos, false, currPointIndex); // true if smoothing enabled
-		currPointIndex = m_poly.m_points.size() + 1;
+		m_poly.generateSegmentsNew(m_pos, true, currPointIndex, m_ior); // true if smoothing enabled
+		currPointIndex = m_poly.m_points.size()+1;
 	}
 	//Construct bulk rectangle bottom surface
 	{
-		m_poly.m_points.push_back(Vector2f(m_L / 2, m_D / 2));
-		m_poly.m_points.push_back(Vector2f(-m_L / 2, m_D / 2));
+		for (float l = m_L; l >= 0; l -= m_L / ((float)maxPoints / 10.f))
+		{
+			Vector2f point = Vector2f(l - m_L / 2, m_D / 2);
+			RotatePoint(point, Vector2f(0.f, 0.f), m_angle);
+			m_poly.m_points.push_back(point);
+		}
 
-		m_poly.generateSegmentsNew(m_pos, false, currPointIndex); // true if smoothing enabled
-		currPointIndex = m_poly.m_points.size() + 1;
+		m_poly.generateSegmentsNew(m_pos, true, m_ior, currPointIndex); // true if smoothing enabled
+		currPointIndex = m_poly.m_points.size()+1;
 	}
 
 	//Construct Left lens surface
 	{
-		unsigned int maxPoints = 100;
 		float radius = abs(m_R1);
 		float rot = TWO_PI / 2;
 		float maxAngle = asinf((m_D / 2) / abs(m_R1));
@@ -57,7 +77,6 @@ void Lens::Update(Vector2f pos)
 		float angleEnd;
 		float step;
 		Vector2f center;
-
 		center = Vector2f(m_R1 * cos(maxAngle) - m_L / 2, 0.f);
 		step = maxAngle * 2 / (float)maxPoints * 2.f;
 
@@ -68,10 +87,9 @@ void Lens::Update(Vector2f pos)
 
 			for (float a = angleBegin; a < angleEnd + step / 2.f; a += step)
 			{
-				float x = radius * cos(a + rot);
-				float y = radius * sin(a + rot);
-
-				m_poly.m_points.push_back(Vector2f(center.x + x, center.y + y));
+				Vector2f point = Vector2f(center.x + radius * cos(a + rot), center.y + radius * sin(a + rot));
+				RotatePoint(point, Vector2f(0.f, 0.f), m_angle);
+				m_poly.m_points.push_back(point);
 			}
 		}
 		else
@@ -81,20 +99,19 @@ void Lens::Update(Vector2f pos)
 
 			for (float a = angleBegin; a > angleEnd - step / 2.f; a -= step)
 			{
-				float x = radius * cos(a + rot);
-				float y = radius * sin(a + rot);
+				Vector2f point = Vector2f(center.x + radius * cos(a + rot), center.y + radius * sin(a + rot));
+				RotatePoint(point, Vector2f(0.f, 0.f), m_angle);
+				m_poly.m_points.push_back(point);
 
-				m_poly.m_points.push_back(Vector2f(center.x + x, center.y + y));
 			}
 		}
 				
 
-		m_poly.generateSegmentsNew(m_pos, true, currPointIndex); // true if smoothing enabled
+		m_poly.generateSegmentsNew(m_pos, true, m_ior, currPointIndex); // true if smoothing enabled
 		currPointIndex = m_poly.m_points.size()+1;
 	}
 	//Construct Right lens surface
 	{
-		unsigned int maxPoints = 100;
 		float radius = abs(m_R2);
 		float rot = TWO_PI / 2;
 		float maxAngle = asinf((m_D / 2) / abs(m_R2));
@@ -113,10 +130,10 @@ void Lens::Update(Vector2f pos)
 
 			for (float a = angleBegin; a > angleEnd - step / 2.f; a -= step)
 			{
-				float x = radius * cos(a + rot);
-				float y = radius * sin(a + rot);
+				Vector2f point = Vector2f(center.x + radius * cos(a + rot), center.y + radius * sin(a + rot));
+				RotatePoint(point, Vector2f(0.f, 0.f), m_angle);
+				m_poly.m_points.push_back(point);
 
-				m_poly.m_points.push_back(Vector2f(center.x + x, center.y + y));
 			}
 		}
 		else
@@ -126,39 +143,47 @@ void Lens::Update(Vector2f pos)
 
 			for (float a = angleBegin; a < angleEnd + step / 2.f; a += step)
 			{
-				float x = radius * cos(a + rot);
-				float y = radius * sin(a + rot);
+				Vector2f point = Vector2f(center.x + radius * cos(a + rot), center.y + radius * sin(a + rot));
+				RotatePoint(point, Vector2f(0.f, 0.f), m_angle);
+				m_poly.m_points.push_back(point);
 
-				m_poly.m_points.push_back(Vector2f(center.x + x, center.y + y));
 			}
 		}
 
-
-		m_poly.generateSegmentsNew(m_pos, true, currPointIndex); // true if smoothing enabled
+		m_poly.generateSegmentsNew(m_pos, true, m_ior, currPointIndex); // true if smoothing enabled
 		currPointIndex = m_poly.m_points.size() + 1;
 	}
-	m_poly.smoothNormalsNew();
+	m_poly.smoothNormals();
 }
 
 void Lens::Draw(RenderWindow& window)
 {
-	Color lens_color = Color(0, 255, 0, 200);
+	Color lens_color = Color(100, 200, 200, 200);
 	Color normal_color = Color(255, 255, 0, 200);
+	Color normal_color1 = Color(255, 0, 255, 200);
 	VertexArray lens_line(Lines, 2);
 	VertexArray normal_line(Lines, 2);
+	VertexArray normal_line1(Lines, 2);
 	lens_line[0].color = lens_color;
 	lens_line[1].color = lens_color;
 	normal_line[0].color = normal_color;
 	normal_line[1].color = normal_color;
+	normal_line1[0].color = normal_color1;
+	normal_line1[1].color = normal_color1;
+
 
 	for (int i = 0; i < m_poly.m_segments.size(); i++)
 	{
 		lens_line[0].position = m_poly.m_segments[i].m_p0;
 		lens_line[1].position = m_poly.m_segments[i].m_p1;
 		window.draw(lens_line);
-		normal_line[0].position = m_poly.m_segments[i].m_p0;
-		normal_line[1].position = m_poly.m_segments[i].m_p0 + m_poly.m_segments[i].m_n0*20.f;
+		//normal_line[0].position = m_poly.m_segments[i].m_p0;
+		//normal_line[1].position = m_poly.m_segments[i].m_p0 + m_poly.m_segments[i].m_n0*20.f;
 		//window.draw(normal_line);
+		//normal_line1[0].position = m_poly.m_segments[i].m_p1;
+		//normal_line1[1].position = m_poly.m_segments[i].m_p1 + m_poly.m_segments[i].m_n1 * 30.f;
+		//window.draw(normal_line1);
+
 		/*CircleShape cir;
 		cir.setRadius(1);
 		cir.setFillColor(Color::Transparent);
@@ -171,4 +196,20 @@ void Lens::Draw(RenderWindow& window)
 
 	}
 
+}
+
+void Lens::RotatePoint(Vector2f& p, Vector2f c, float angle)
+{
+		float si = sin(angle);
+		float cs = cos(angle);
+
+		Vector2f point = p;
+
+		// translate point back to origin:
+		point.x -= c.x;
+		point.y -= c.y;
+
+		// rotate and translate point back:
+		p.x = point.x * cs - point.y * si + c.x;
+		p.y = point.x * si + point.y * cs + c.y;
 }

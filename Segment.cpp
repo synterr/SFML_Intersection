@@ -1,10 +1,13 @@
 #include "Segment.h"
 
-Segment::Segment(sf::Vector2f p0, sf::Vector2f p1, bool isSmooth)
+Segment::Segment(sf::Vector2f p0, sf::Vector2f p1, bool isSmooth, float ior)
 {
+	this->lensIndex = -1;
 	this->m_smooth = isSmooth;
 	this->m_p0 = p0;
 	this->m_p1 = p1;
+	this->ior = ior;
+
 	float dx = m_p1.x - m_p0.x;
 	float dy = m_p1.y - m_p0.y;
 	m_n0 = Vector2f(-dy, dx);
@@ -15,6 +18,9 @@ Segment::Segment(sf::Vector2f p0, sf::Vector2f p1, bool isSmooth)
 
 Segment::Segment()
 {
+	this->lensIndex = -1;
+	this->m_smooth = false;
+	this->ior = 1.0f;
 	this->m_p0 = Vector2f(0, 0);
 	this->m_p1 = Vector2f(0, 0);
 	this->m_n0 = Vector2f(0, 0);

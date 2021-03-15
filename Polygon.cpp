@@ -8,31 +8,31 @@ Polygon::~Polygon()
 {
 }
 //probably should be moved to Lens class
-void Polygon::generateSegments()
+void Polygon::generateSegments(bool isSmooth, float ior)
 {
 	int i = 0;
 	Vector2f lastPoint;
 	for (auto it : this->m_points)
 	{
 		if (i % 2 != 0) //if i > 0 for continous convex
-			this->m_segments.push_back(Segment(lastPoint, it, true));
+			this->m_segments.push_back(Segment(lastPoint, it, isSmooth, ior));
 		lastPoint = it;
 		i++;
 	}
 
 #ifdef NDEBUG
-	printf("Points: %i Segments: %i\n", (int)m_points.size(), (int)m_segments.size());
+	//printf("Points: %i Segments: %i\n", (int)m_points.size(), (int)m_segments.size());
 
-	for (int i = 0; i < this->m_segments.size(); i++)
-	{
-		printf("Segment: %i\n", i);
+	//for (int i = 0; i < this->m_segments.size(); i++)
+	//{
+		/*printf("Segment: %i\n", i);
 		printf("p0: %f, %f p1: %f, %f \n", this->m_segments[i].m_p0.x, this->m_segments[i].m_p0.y, this->m_segments[i].m_p1.x, this->m_segments[i].m_p1.y);
-		printf("n0: %f, %f n1: %f, %f \n", this->m_segments[i].m_n0.x, this->m_segments[i].m_n0.y, this->m_segments[i].m_n1.x, this->m_segments[i].m_n1.y);
-	}
+		printf("n0: %f, %f n1: %f, %f \n", this->m_segments[i].m_n0.x, this->m_segments[i].m_n0.y, this->m_segments[i].m_n1.x, this->m_segments[i].m_n1.y);*/
+	//}
 #endif	
 }
 
-void Polygon::generateSegmentsNew(Vector2f pos, bool isSmooth, int startIndex)
+void Polygon::generateSegmentsNew(Vector2f pos, bool isSmooth, float ior, int startIndex)
 {
 	int i = 0;
 	Vector2f lastPoint;
@@ -47,7 +47,7 @@ void Polygon::generateSegmentsNew(Vector2f pos, bool isSmooth, int startIndex)
 			curPoint.y += pos.y;
 
 			if (i >= startIndex)
-				this->m_segments.push_back(Segment(lastPoint, curPoint, isSmooth)); //New segment already has normals calculated in constructor
+				this->m_segments.push_back(Segment(lastPoint, curPoint, isSmooth, ior)); //New segment already has normals calculated in constructor
 			/*if (m_segments.size() > 1 && smoothNormals)
 			{
 				Vector2f smoothedNormal;
@@ -62,14 +62,14 @@ void Polygon::generateSegmentsNew(Vector2f pos, bool isSmooth, int startIndex)
 		i++;
 	}
 
-	printf("Points: %i Segments: %i\n", (int)m_points.size(), (int)m_segments.size());
+	/*printf("Points: %i Segments: %i\n", (int)m_points.size(), (int)m_segments.size());
 
 	for (int i = 0; i < this->m_segments.size(); i++)
 	{
 		printf("Segment: %i\n", i);
 		printf("p0: %f, %f p1: %f, %f \n", this->m_segments[i].m_p0.x, this->m_segments[i].m_p0.y, this->m_segments[i].m_p1.x, this->m_segments[i].m_p1.y);
 		printf("n0: %f, %f n1: %f, %f \n", this->m_segments[i].m_n0.x, this->m_segments[i].m_n0.y, this->m_segments[i].m_n1.x, this->m_segments[i].m_n1.y);
-	}
+	}*/
 }
 
 //probably should be moved to Lens class
@@ -113,9 +113,9 @@ void Polygon::smoothNormals()
 			ptr->m_n1 = smoothedNormal;
 		}
 
-		printf("Segment: %i\n", i);
+		/*printf("Segment: %i\n", i);
 		printf("p0: %f, %f p1: %f, %f \n", this->m_segments[i].m_p0.x, this->m_segments[i].m_p0.y, this->m_segments[i].m_p1.x, this->m_segments[i].m_p1.y);
-		printf("n0: %f, %f n1: %f, %f \n", this->m_segments[i].m_n0.x, this->m_segments[i].m_n0.y, this->m_segments[i].m_n1.x, this->m_segments[i].m_n1.y);
+		printf("n0: %f, %f n1: %f, %f \n", this->m_segments[i].m_n0.x, this->m_segments[i].m_n0.y, this->m_segments[i].m_n1.x, this->m_segments[i].m_n1.y);*/
 	}
 }
 

@@ -8,11 +8,12 @@
 
 Vector2f g_mouse_pos = Vector2f(0, 0);    //Last Left Mouse Position
 Vector2f l_mouse_pos = Vector2f(10, 10);  //Last Right Mouse Position
+float    g_mouse_scroll = 0.f;
 
 bool redrawShape = true;
 
-unsigned int	trace_density = 500;//500
-unsigned int	maxdepth = 16;//8
+unsigned int	trace_density = 250;//500
+unsigned int	maxdepth = 32;//8
 
 
 const Vector2f	window_size(1280.f, 720.f);
@@ -37,14 +38,15 @@ int main()
 	else
 		alphaint = div;
 
-	const Color		ray_color = Color(255 , 255 , 255, 255 / (alphaint / div));
-	const Color		ray_color_hit = Color(255 , 255, 255, 255 / (alphaint / div));
+	const Color		ray_color = Color(255, 255, 255, 255 / (alphaint / div));
+	const Color		ray_color_hit = Color(255, 255, 255, 255 / (alphaint / div));
 	const Color		ray_color_secondary = Color(255, 100, 50, 50);
 	const Color		wall_color = Color(0, 255, 0, 200);
+	VertexArray		ray_line(Lines, 2);
 
 	//Create light sources
-	g_mouse_pos = Vector2f(window_size.x  - 20, window_size.y / 2);
-	PointLightSource light1 = PointLightSource(1.f, trace_density, g_mouse_pos, TWO_PI/2, ray_color, DegToRad(30.f));
+	g_mouse_pos = Vector2f(window_size.x - 20, window_size.y / 2);
+	PointLightSource light1 = PointLightSource(1.f, trace_density, g_mouse_pos, TWO_PI / 2, ray_color, DegToRad(30.f));
 	//LinearLightSource light1 = LinearLightSource(1.f, trace_density, g_mouse_pos, 0.f, ray_color, 60.f);
 	light1.UpdateLight();
 
@@ -55,115 +57,21 @@ int main()
 
 	srand((unsigned int)time(NULL));
 
-	Lens lens1(Vector2f(window_size.x / 2, window_size.y / 2), -400.0f, -400.0f, 200.0f, 50.0f, 1.5f);
+	Lens nulLens;
+	vector<Lens*> lenses;
+	Lens lens1(Vector2f(window_size.x / 2 + 50, window_size.y / 2), -200.0f, -200.0f, 200.0f, 80.0f, 1.5f);
+	Lens lens2(Vector2f(window_size.x / 2 - 50, window_size.y / 2), 150.0f, 150.0f, 200.0f, 10.0f, 1.5f);
+	Lens lens3(Vector2f(window_size.x / 2 - 200, window_size.y / 2), -950.0f, 110.0f, 200.0f, 20.0f, 1.5f);
+
 	lens1.Update(lens1.m_pos);
-	Polygon circle;
+	lens2.Update(lens2.m_pos);
+	lens3.Update(lens3.m_pos);
 
-	//unsigned int maxPoints = 720;
-	//float radius = 200.f;
-	//float rot = 0;
-	//Vector2f center = Vector2f(window_size.x / 2, -100/*window_size.y / 2*/);
-	//float lx = radius * cos(0 + rot);
-	//float ly = radius * sin(0 + rot);
+	lenses.push_back(&lens1);
+	lenses.push_back(&lens2);
+	lenses.push_back(&lens3);
 
-	//float step = TWO_PI / (float)maxPoints * 2.f;
-
-	//for (float a = 0 + step; a < TWO_PI/2 + step / 100.f; a += step)
-	//{
-	//	float x = radius * cos(a + rot);
-	//	float y = radius * sin(a + rot);
-
-	//	circle.m_points.push_back(Vector2f(center.x + lx, center.y + ly));
-	//	circle.m_points.push_back(Vector2f(center.x + x, center.y + y));
-
-	//	lx = x;
-	//	ly = y;
-	//}
-
-	//unsigned int maxPoints = 180;
-	//float radius = 250.f;
-	//float rot = -TWO_PI / 8;
-	//Vector2f center = Vector2f(window_size.x / 2 + 300, window_size.y / 2);
-	//float lx = radius * cos(0 + rot);
-	//float ly = radius * sin(0 + rot);
-
-	//float step = TWO_PI / (float)maxPoints * 2.f;
-
-	//for (float a = 0 + step; a < TWO_PI / 2.5 + step / 100.f; a += step)
-	//{
-	//	float x = radius * cos(a + rot);
-	//	float y = radius * sin(a + rot);
-
-	//	circle.m_points.push_back(Vector2f(center.x + lx, center.y + ly));
-	//	circle.m_points.push_back(Vector2f(center.x + x, center.y + y));
-
-	//	lx = x;
-	//	ly = y;
-	//}
-
-
-	//maxPoints = 180 / 2;
-	//radius = 50;
-	//rot = -TWO_PI / 9;
-	//center = Vector2f(window_size.x / 2-200, window_size.y / 2);
-	//lx = radius * cos(0 + rot);
-	//ly = radius * sin(0 + rot);
-
-	//step = TWO_PI / (float)maxPoints * 2.f;
-
-	//for (float a = 0 + step; a < TWO_PI+ step / 100.f; a += step)
-	//{
-	//	float x = radius * cos(a + rot);
-	//	float y = radius * sin(a + rot);
-
-	//	circle.m_points.push_back(Vector2f(center.x + lx, center.y + ly));
-	//	circle.m_points.push_back(Vector2f(center.x + x, center.y + y));
-
-	//	lx = x;
-	//	ly = y;
-	//}
-
-	//maxPoints = 180;
-	//radius = 100;
-	//rot = -TWO_PI / 9;
-	//center = Vector2f(window_size.x / 2 +150, window_size.y / 2);
-	//lx = radius * cos(0 + rot);
-	//ly = radius * sin(0 + rot);
-
-	//step = TWO_PI / (float)maxPoints * 2.f;
-
-	//for (float a = 0 + step; a < TWO_PI + step / 100.f; a += step)
-	//{
-	//	float x = radius * cos(a + rot);
-	//	float y = radius * sin(a + rot);
-
-	//	circle.m_points.push_back(Vector2f(center.x + lx, center.y + ly));
-	//	circle.m_points.push_back(Vector2f(center.x + x, center.y + y));
-
-	//	lx = x;
-	//	ly = y;
-	//}
-	//circle.generateSegments();
-	//if (smoothing)
-		//circle.smoothNormals();
-
-
-	// Do this if want to have segment that is closing shape (last point to first point)
-	//segments.push_back(Segment(lastPoint, points.at(0)));
-
-	//for (auto it : circle.m_segments)
-	//	printf("Segment: %f, %f - %f, %f\n", it.m_p0.x, it.m_p0.y, it.m_p1.x, it.m_p1.y);
-
-	//light1.UpdateLight();
-
-	// Make line used for drawing rays
-	VertexArray ray_line(Lines, 2);
-
-	// Make line used for drawing walls
-
-	VertexArray wall_line(Lines, 2);
-	wall_line[0].color = wall_color;
-	wall_line[1].color = wall_color;
+	Lens* selectedLens = &nulLens;
 
 	// Main loop
 
@@ -183,6 +91,11 @@ int main()
 				printf("Window resized to: %i x %i \n", event.size.width, event.size.height);
 				break;
 
+			case Event::MouseWheelScrolled:
+				g_mouse_scroll = event.mouseWheelScroll.delta;
+
+				break;
+
 				//case Event::TextEntered:
 				//	if (event.text.unicode < 128) //Normal characters
 				//		printf("%c", event.text.unicode);
@@ -192,22 +105,70 @@ int main()
 			}
 
 		}
+		g_mouse_pos = Vector2f(Mouse::getPosition(window));
 
-		if (Mouse::isButtonPressed(Mouse::Button::Left))
+		for (int i = 0; i < lenses.size(); i++)
 		{
-			g_mouse_pos = Vector2f(Mouse::getPosition(window));
-			//light1.angle = atan2(l_mouse_pos.y - g_mouse_pos.y, l_mouse_pos.x - g_mouse_pos.x);
-			//light1.UpdateLight(g_mouse_pos);
-			//window.clear(Color(10, 10, 10));
+			if (lenses[i]->m_bounds.contains((Vector2i)g_mouse_pos) && Keyboard::isKeyPressed(Keyboard::LShift))
+			{
+				selectedLens = lenses[i];
+			}
+		}
+		if (Keyboard::isKeyPressed(Keyboard::LAlt))
+		{
+			if (g_mouse_scroll > 0.f)
+			{
+				selectedLens->m_R1 += selectedLens->m_R1 / 10.f;
+				if (selectedLens->m_R1 > 1000)
+					selectedLens->m_R1 = -1000;
+
+				selectedLens->Update(selectedLens->m_pos, selectedLens->m_angle);
+			}
+			else if (g_mouse_scroll < 0.f)
+			{
+				selectedLens->m_R1 -= selectedLens->m_R1 / 10.f;
+				if (selectedLens->m_R1 < -1000)
+					selectedLens->m_R1 = 1000;
+				selectedLens->Update(selectedLens->m_pos, selectedLens->m_angle);
+			}
+
+		}
+		else if (Keyboard::isKeyPressed(Keyboard::LControl))
+		{
+
+			if (Mouse::isButtonPressed(Mouse::Button::Left))
+			{
+				g_mouse_pos = Vector2f(Mouse::getPosition(window));
+				selectedLens->Update(g_mouse_pos, selectedLens->m_angle);
+			}
+
+			if (Mouse::isButtonPressed(Mouse::Button::Right))
+			{
+				l_mouse_pos = Vector2f(Mouse::getPosition(window));
+				selectedLens->m_angle = atan2(l_mouse_pos.y - selectedLens->m_pos.y, l_mouse_pos.x - selectedLens->m_pos.x);
+				selectedLens->Update(selectedLens->m_pos, selectedLens->m_angle);
+			}
 		}
 
-		if (Mouse::isButtonPressed(Mouse::Button::Right))
+		else
 		{
-			l_mouse_pos = Vector2f(Mouse::getPosition(window));
-			light1.angle = atan2(l_mouse_pos.y - g_mouse_pos.y, l_mouse_pos.x - g_mouse_pos.x);
-			//light1.UpdateLight(g_mouse_pos);
-			//window.clear(Color(10, 10, 10));
+			if (Mouse::isButtonPressed(Mouse::Button::Left))
+			{
+				g_mouse_pos = Vector2f(Mouse::getPosition(window));
+				//light1.angle = atan2(l_mouse_pos.y - g_mouse_pos.y, l_mouse_pos.x - g_mouse_pos.x);
+				light1.UpdateLight(g_mouse_pos);
+				//window.clear(Color(10, 10, 10));
+			}
+
+			if (Mouse::isButtonPressed(Mouse::Button::Right))
+			{
+				l_mouse_pos = Vector2f(Mouse::getPosition(window));
+				light1.angle = atan2(l_mouse_pos.y - light1.position.y, l_mouse_pos.x - light1.position.x);
+				light1.UpdateLight(light1.position);
+				//window.clear(Color(10, 10, 10));
+			}
 		}
+		g_mouse_scroll = 0.f;
 		// If mouse if the same as previous frame, move on to the next
 		//if (mouse_snapshot == g_mouse_pos)
 			//continue;
@@ -216,7 +177,7 @@ int main()
 		//window.draw(convex);
 
 		// Set start of ray-drawing line to mouse position
-		light1.UpdateLight(g_mouse_pos);
+		light1.UpdateLight(light1.position);
 		total_rays = 0;
 
 		ray_line[0].color = ray_color_hit;
@@ -238,7 +199,7 @@ int main()
 						break;
 					}
 					//Prepare test segment
-					Segment testseg(Vector2f(0.f, 0.f), Vector2f(0.f, 0.f), false);
+					Segment testseg(Vector2f(0.f, 0.f), Vector2f(0.f, 0.f), false, 1.0f);
 					if (testsegs.size() - 1 >= depth && testsegs.size() > 0)
 						testseg = *testsegs[d];			//Set previously found segment if existing
 					else
@@ -247,23 +208,45 @@ int main()
 					newDepth = false;
 					for (int r = 0; r < light1.traces[i].rays[d].size(); r++)	//Rays for specific depth
 					{
+						float ior = testseg.ior;
 						Ray& rayHit = light1.traces[i].rays[d][r];
 
 						rayHit.m_isHit = false;
 
-						if (!light1.traces[i].rays[d][r].calc_hit(testseg)) //Check last hited segment first
+						for (int l = 0; l < lenses.size(); l++)
 						{
-							for (int j = 0; j < lens1.m_poly.m_segments.size(); j++)
+							if (testseg.lensIndex == l)
 							{
-								// Calculate ray end-point
-								// When an intersection is found, the end-point is set to that intersection, meaning the next check will check for walls
-								// between start and the new end-point. This means the ray will always go to the nearest wall
-
-								if (rayHit.calc_hit(lens1.m_poly.m_segments[j]))
-									testsegs[d] = &lens1.m_poly.m_segments[j];
+								rayHit.calc_hit(testseg);
+								break;
 							}
 						}
-						if (rayHit.m_isHit && rayHit.intensity > 0.001f) // 0.02 ignore transmission of very low intensities
+						if (!rayHit.m_isHit)
+						{
+							for (int l = 0; l < lenses.size(); l++)
+							{
+
+								if (!light1.traces[i].rays[d][r].calc_hit(testseg)) //Check last hited segment first
+								{
+
+									for (int j = 0; j < lenses[l]->m_poly.m_segments.size(); j++)
+									{
+										// Calculate ray end-point
+										// When an intersection is found, the end-point is set to that intersection, meaning the next check will check for walls
+										// between start and the new end-point. This means the ray will always go to the nearest wall
+
+										if (rayHit.calc_hit(lenses[l]->m_poly.m_segments[j]))
+										{
+											ior = lenses[l]->m_ior;
+											lenses[l]->m_poly.m_segments[j].lensIndex = l;
+											testsegs[d] = &lenses[l]->m_poly.m_segments[j];
+										}
+									}
+								}
+
+							}
+						}
+						if (rayHit.m_isHit && rayHit.intensity > 0.02f) // 0.02 ignore transmission of very low intensities
 						{
 							if (!newDepth)
 							{
@@ -273,22 +256,22 @@ int main()
 							}
 
 							depth = (unsigned int)light1.traces[i].rays.size() - 1;
-		
-							
-							float kr=0.5f;
-							FresnelS(rayHit.m_dir, rayHit.m_normal, lens1.m_ior, kr);
+
+
+							float kr = 0.5f;
+							FresnelS(rayHit.m_dir, rayHit.m_normal, ior, kr);
 
 							// compute refraction if it is not a case of total internal reflection
 							if (kr < 1)
 							{
-								Ray ray2(rayHit.m_end, Refract(rayHit.m_dir, rayHit.m_normal, lens1.m_ior));
+								Ray ray2(rayHit.m_end, Refract(rayHit.m_dir, rayHit.m_normal, ior));
 								ray2.m_isHit = false;
 								ray2.intensity = rayHit.intensity * (1 - kr);
 								light1.traces[i].rays[depth].push_back(ray2);
 							}
-								
+
 							//if (kr >= 1.f)
-								kr = 0.2f; // 0.1 Reduce intensity for internal reflections to avoid calculations
+							kr = 0.1f; // 0.1 Reduce intensity for internal reflections to avoid calculations
 
 							Ray ray1(rayHit.m_end, Reflect(rayHit.m_dir, rayHit.m_normal));
 							ray1.m_isHit = false;
@@ -326,27 +309,13 @@ int main()
 						total_rays++;
 						window.draw(ray_line);
 					}
+
 				}
 			} while (newDepth == true);
 		}
 
-		for (int i = 0; i < circle.m_segments.size(); i++)
-		{
-			wall_line[0].position = circle.m_segments[i].m_p0;
-			wall_line[1].position = circle.m_segments[i].m_p1;
-			window.draw(wall_line);
-			/*CircleShape cir;
-			cir.setRadius(1);
-			cir.setFillColor(Color::Transparent);
-			cir.setOutlineThickness(1);
-			cir.setOutlineColor(Color::Red);
-			cir.setPosition(circle.m_segments[i].m_p0);
-			window.draw(cir);
-			cir.setPosition(circle.m_segments[i].m_p1);
-			window.draw(cir);*/
-
-		}
-		lens1.Draw(window);
+		for (auto lens : lenses)
+			lens->Draw(window);
 
 
 #ifdef NDEBUG

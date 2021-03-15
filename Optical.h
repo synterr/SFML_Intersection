@@ -14,6 +14,7 @@ public:
 
 public:
 	Vector2f m_pos;
+	float m_angle; 
 	IntRect m_bounds;
 
 private:

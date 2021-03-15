@@ -17,8 +17,8 @@ public:
 	vector<Vector2f> m_points;
 	vector<Segment>  m_segments;
 
-	void generateSegmentsNew(Vector2f pos, bool isSmooth, int startIndex); //probably should be moved to Lens class
-	void generateSegments(); //probably should be moved to Lens class
+	void generateSegmentsNew(Vector2f pos, bool isSmooth, float ior, int startIndex); //probably should be moved to Lens class
+	void generateSegments(bool isSmooth, float ior); //probably should be moved to Lens class
 	void smoothNormals();	 //probably should be moved to Lens class
 	void smoothNormalsNew();	 //probably should be moved to Lens class
 
