@@ -133,6 +133,25 @@ int main()
 			}
 
 		}
+		else if (Keyboard::isKeyPressed(Keyboard::RAlt))
+		{
+			if (g_mouse_scroll > 0.f)
+			{
+				selectedLens->m_R2 += selectedLens->m_R2 / 10.f;
+				if (selectedLens->m_R2 > 1000)
+					selectedLens->m_R2 = -1000;
+
+				selectedLens->Update(selectedLens->m_pos, selectedLens->m_angle);
+			}
+			else if (g_mouse_scroll < 0.f)
+			{
+				selectedLens->m_R2 -= selectedLens->m_R2 / 10.f;
+				if (selectedLens->m_R2 < -1000)
+					selectedLens->m_R2 = 1000;
+				selectedLens->Update(selectedLens->m_pos, selectedLens->m_angle);
+			}
+
+		}
 		else if (Keyboard::isKeyPressed(Keyboard::LControl))
 		{
 
