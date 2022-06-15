@@ -18,6 +18,7 @@ public:
 	void Draw(RenderWindow& window);
 
 public:
+	bool m_isSelected;
 	float m_R1; // radius of left side surface  (if R1 < 0 flip normals for that surface!)
 	float m_R2; // radius of right side surface (if R2 < 0 flip normals for that surface!)
 	float m_D;  // diameter of the lens

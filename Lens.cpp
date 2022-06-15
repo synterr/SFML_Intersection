@@ -2,6 +2,7 @@
 
 Lens::Lens()
 {
+	m_isSelected = false;
 	m_angle = 0;
 	m_pos = Vector2f(100.f, 100.f);
 	m_R1 = 1.0f;
@@ -13,6 +14,7 @@ Lens::Lens()
 
 Lens::Lens(Vector2f pos, float r1, float r2, float d, float l, float ior)
 {
+	m_isSelected = false;
 	m_angle = 0;
 	m_pos = pos;
 	m_R1 = r1;
@@ -158,7 +160,12 @@ void Lens::Update(Vector2f pos, float angle)
 
 void Lens::Draw(RenderWindow& window)
 {
-	Color lens_color = Color(100, 200, 200, 200);
+	Color lens_color;
+	if (m_isSelected)
+		lens_color = Color(0, 100, 200, 255);
+	else
+		lens_color = Color(100, 200, 200, 200);
+
 	Color normal_color = Color(255, 255, 0, 200);
 	Color normal_color1 = Color(255, 0, 255, 200);
 	VertexArray lens_line(Lines, 2);

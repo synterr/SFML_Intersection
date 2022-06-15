@@ -107,12 +107,31 @@ int main()
 		}
 		g_mouse_pos = Vector2f(Mouse::getPosition(window));
 
-		for (int i = 0; i < lenses.size(); i++)
-		{
-			if (lenses[i]->m_bounds.contains((Vector2i)g_mouse_pos) && Keyboard::isKeyPressed(Keyboard::LShift))
+		if (!Mouse::isButtonPressed(Mouse::Button::Left) && !Mouse::isButtonPressed(Mouse::Button::Right)) {
+			
+			selectedLens->m_isSelected = false;
+			selectedLens = &nulLens;
+			for (int i = 0; i < lenses.size(); i++)
 			{
-				selectedLens = lenses[i];
+				if (lenses[i]->m_bounds.contains((Vector2i)g_mouse_pos))
+				{
+
+					selectedLens = lenses[i];
+					selectedLens->m_isSelected = true;
+					break;
+				}
 			}
+		}
+		if (Mouse::isButtonPressed(Mouse::Button::Left) && selectedLens != &nulLens)
+		{
+			g_mouse_pos = Vector2f(Mouse::getPosition(window));
+			selectedLens->Update(g_mouse_pos, selectedLens->m_angle);
+		}
+		if (Mouse::isButtonPressed(Mouse::Button::Right) && selectedLens != &nulLens)
+		{
+			l_mouse_pos = Vector2f(Mouse::getPosition(window));
+			selectedLens->m_angle = atan2(l_mouse_pos.y - selectedLens->m_pos.y, l_mouse_pos.x - selectedLens->m_pos.x);
+			selectedLens->Update(selectedLens->m_pos, selectedLens->m_angle);
 		}
 		if (Keyboard::isKeyPressed(Keyboard::LAlt))
 		{
@@ -154,24 +173,12 @@ int main()
 		}
 		else if (Keyboard::isKeyPressed(Keyboard::LControl))
 		{
-
-			if (Mouse::isButtonPressed(Mouse::Button::Left))
-			{
-				g_mouse_pos = Vector2f(Mouse::getPosition(window));
-				selectedLens->Update(g_mouse_pos, selectedLens->m_angle);
-			}
-
-			if (Mouse::isButtonPressed(Mouse::Button::Right))
-			{
-				l_mouse_pos = Vector2f(Mouse::getPosition(window));
-				selectedLens->m_angle = atan2(l_mouse_pos.y - selectedLens->m_pos.y, l_mouse_pos.x - selectedLens->m_pos.x);
-				selectedLens->Update(selectedLens->m_pos, selectedLens->m_angle);
-			}
+			
 		}
 
 		else
 		{
-			if (Mouse::isButtonPressed(Mouse::Button::Left))
+			if (Mouse::isButtonPressed(Mouse::Button::Left) && selectedLens == &nulLens)
 			{
 				g_mouse_pos = Vector2f(Mouse::getPosition(window));
 				//light1.angle = atan2(l_mouse_pos.y - g_mouse_pos.y, l_mouse_pos.x - g_mouse_pos.x);
@@ -179,7 +186,7 @@ int main()
 				//window.clear(Color(10, 10, 10));
 			}
 
-			if (Mouse::isButtonPressed(Mouse::Button::Right))
+			if (Mouse::isButtonPressed(Mouse::Button::Right) && selectedLens == &nulLens)
 			{
 				l_mouse_pos = Vector2f(Mouse::getPosition(window));
 				light1.angle = atan2(l_mouse_pos.y - light1.position.y, l_mouse_pos.x - light1.position.x);
