@@ -46,8 +46,8 @@ int main()
 
 	//Create light sources
 	g_mouse_pos = Vector2f(window_size.x - 20, window_size.y / 2);
-	PointLightSource light1 = PointLightSource(1.f, trace_density, g_mouse_pos, TWO_PI / 2, ray_color, DegToRad(30.f));
-	//LinearLightSource light1 = LinearLightSource(1.f, trace_density, g_mouse_pos, 0.f, ray_color, 60.f);
+	//PointLightSource light1 = PointLightSource(1.f, trace_density, g_mouse_pos, TWO_PI / 2, ray_color, DegToRad(30.f));
+	LinearLightSource light1 = LinearLightSource(1.f, trace_density, g_mouse_pos, 0.f, ray_color, 60.f);
 	light1.UpdateLight();
 
 	ContextSettings settings;
@@ -62,14 +62,17 @@ int main()
 	Lens lens1(Vector2f(window_size.x / 2 + 50, window_size.y / 2), -200.0f, -200.0f, 200.0f, 80.0f, 1.5f);
 	Lens lens2(Vector2f(window_size.x / 2 - 50, window_size.y / 2), 150.0f, 150.0f, 200.0f, 10.0f, 1.5f);
 	Lens lens3(Vector2f(window_size.x / 2 - 200, window_size.y / 2), -950.0f, 110.0f, 200.0f, 20.0f, 1.5f);
+	Lens lens4(Vector2f(window_size.x / 2 + 140, window_size.y / 2), -150.0f, 150.0f, 200.0f, 40.0f, 1.5f);
 
 	lens1.Update(lens1.m_pos);
 	lens2.Update(lens2.m_pos);
 	lens3.Update(lens3.m_pos);
+	lens4.Update(lens4.m_pos);
 
 	lenses.push_back(&lens1);
 	lenses.push_back(&lens2);
 	lenses.push_back(&lens3);
+	lenses.push_back(&lens4);
 
 	Lens* selectedLens = &nulLens;
 

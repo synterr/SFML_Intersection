@@ -7,7 +7,8 @@ Polygon::Polygon()
 Polygon::~Polygon()
 {
 }
-//probably should be moved to Lens class
+
+
 void Polygon::generateSegments(bool isSmooth, float ior)
 {
 	int i = 0;
@@ -37,7 +38,7 @@ void Polygon::generateSegmentsNew(Vector2f pos, bool isSmooth, float ior, int st
 	int i = 0;
 	Vector2f lastPoint;
 	Vector2f curPoint;
-
+	
 	for (auto it : this->m_points)
 	{
 		if (i > 0) //if i > 0 for continous convex
@@ -45,6 +46,16 @@ void Polygon::generateSegmentsNew(Vector2f pos, bool isSmooth, float ior, int st
 			curPoint = it;
 			curPoint.x += pos.x;
 			curPoint.y += pos.y;
+			
+			// calculate bound rect
+			if (curPoint.x < m_bounds.left)
+				m_bounds.left = curPoint.x;
+			else if (curPoint.x > m_bounds.width)
+				m_bounds.width = curPoint.x;
+			if (curPoint.y < m_bounds.top)
+				m_bounds.top = curPoint.y;
+			else if (curPoint.y > m_bounds.height)
+				m_bounds.height = curPoint.y;
 
 			if (i >= startIndex)
 				this->m_segments.push_back(Segment(lastPoint, curPoint, isSmooth, ior)); //New segment already has normals calculated in constructor
@@ -62,6 +73,10 @@ void Polygon::generateSegmentsNew(Vector2f pos, bool isSmooth, float ior, int st
 		i++;
 	}
 
+	// normalize bound rect
+	m_bounds.width = m_bounds.width - m_bounds.left;
+	m_bounds.height = m_bounds.height - m_bounds.top;
+
 	/*printf("Points: %i Segments: %i\n", (int)m_points.size(), (int)m_segments.size());
 
 	for (int i = 0; i < this->m_segments.size(); i++)
@@ -72,7 +87,7 @@ void Polygon::generateSegmentsNew(Vector2f pos, bool isSmooth, float ior, int st
 	}*/
 }
 
-//probably should be moved to Lens class
+
 void Polygon::smoothNormals()
 {
 
@@ -137,7 +152,7 @@ void Polygon::smoothNormalsNew()
 	}
 }
 
-//probably should be moved to Lens class
+
 Segment& Polygon::findSegmentByPoint(Segment& s, bool& found, int p0_or_1, int f0_or_1)
 {
 	Vector2f* point;
@@ -166,7 +181,8 @@ Segment& Polygon::findSegmentByPoint(Segment& s, bool& found, int p0_or_1, int f
 	found = false;
 	return s;
 }
-//probably should be moved to Lens class
+
+
 float Polygon::VectorCmp(Vector2f& v0, Vector2f& v1)
 {
 	float dx = abs(v0.x - v1.x);
@@ -175,6 +191,16 @@ float Polygon::VectorCmp(Vector2f& v0, Vector2f& v1)
 	return dx + dy;
 }
 
+void Polygon::reset()
+{
+	m_points.clear();
+	m_segments.clear();
+
+	m_bounds.top = 1000;
+	m_bounds.left = 1000;
+	m_bounds.height = -1000;
+	m_bounds.width = -1000;
+}
 inline float Polygon::VectorDotProduct(Vector2f v1, Vector2f v2) { return v1.x * v2.x + v1.y * v2.y; }
 
 inline Vector2f Polygon::VectorNormalize(Vector2f v) { return v / sqrtf(VectorDotProduct(v, v)); }

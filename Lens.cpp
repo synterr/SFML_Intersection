@@ -30,20 +30,15 @@ Lens::~Lens()
 
 void Lens::Update(Vector2f pos, float angle)
 {
-	m_poly.m_points.clear();
-	m_poly.m_segments.clear();
+	m_poly.reset();
+
 	m_pos = pos;
 	m_angle = angle;
-	
-	this->m_bounds.top = m_pos.y - m_D / 2.f;
-	this->m_bounds.left = m_pos.x - m_L;
-	this->m_bounds.width = m_L*2.f ;
-	this->m_bounds.height = m_D;
 
 	constexpr auto TWO_PI = 3.14159265358979f * 2;
 	int currPointIndex = 0;
 	
-	unsigned int maxPoints = 40;
+	unsigned int maxPoints = 30;
 	
 	//Construct bulk rectangle top surface
 	{
@@ -107,8 +102,7 @@ void Lens::Update(Vector2f pos, float angle)
 
 			}
 		}
-				
-
+		
 		m_poly.generateSegmentsNew(m_pos, true, m_ior, currPointIndex); // true if smoothing enabled
 		currPointIndex = m_poly.m_points.size()+1;
 	}
@@ -156,6 +150,14 @@ void Lens::Update(Vector2f pos, float angle)
 		currPointIndex = m_poly.m_points.size() + 1;
 	}
 	m_poly.smoothNormals();
+
+	this->m_bounds = m_poly.m_bounds;
+
+	//this->m_bounds.top = m_pos.y - m_poly.m_bounds.height / 2;
+	//this->m_bounds.left = m_pos.x - m_poly.m_bounds.width / 2;
+	//this->m_bounds.width = m_poly.m_bounds.width;
+	//this->m_bounds.height = m_poly.m_bounds.height;
+
 }
 
 void Lens::Draw(RenderWindow& window)
